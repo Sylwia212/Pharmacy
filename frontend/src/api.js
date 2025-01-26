@@ -73,3 +73,8 @@ export async function deleteUser(userId, token) {
   });
   return await response.json();
 }
+
+export async function getMedications() {
+  const response = await fetch(`${API_URL}/api/medications`);
+  return await response.json();
+}
