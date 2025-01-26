@@ -87,7 +87,6 @@ export async function addMedication(formData) {
   return await response.json();
 }
 
-
 export async function updateMedication(id, medicationData) {
   const response = await fetch(`${API_URL}/api/medications/${id}`, {
     method: "PUT",
@@ -99,9 +98,37 @@ export async function updateMedication(id, medicationData) {
   return await response.json();
 }
 
-
 export async function deleteMedication(id) {
   const response = await fetch(`${API_URL}/api/medications/${id}`, {
+    method: "DELETE",
+  });
+  return await response.json();
+}
+
+export async function addToCart(userId, medicationId, quantity) {
+  const response = await fetch(`http://localhost:3000/api/cart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId,
+      medicationId,
+      quantity,
+    }),
+  });
+  return await response.json();
+}
+
+export async function getCart(userId) {
+  const response = await fetch(`${API_URL}/api/cart/${userId}`, {
+    method: "GET",
+  });
+  return await response.json();
+}
+
+export async function removeFromCart(cartItemId) {
+  const response = await fetch(`${API_URL}/api/cart/${cartItemId}`, {
     method: "DELETE",
   });
   return await response.json();

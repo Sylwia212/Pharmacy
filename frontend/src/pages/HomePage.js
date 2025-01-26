@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getMedications, deleteMedication } from "../api";
+import { getMedications, deleteMedication, addToCart } from "../api";
 
-function HomePage() {
+function HomePage({ userId }) {
   const [medications, setMedications] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -25,6 +25,11 @@ function HomePage() {
     }
   };
 
+  const handleAddToCart = async (medicationId) => {
+    await addToCart(userId, medicationId, 1);
+    alert("Dodano do koszyka!");
+  };
+
   return (
     <div style={{ margin: "20px" }}>
       <h2>Lista leków</h2>
@@ -46,6 +51,9 @@ function HomePage() {
                   width="150"
                 />
               )}
+              <button onClick={() => handleAddToCart(med.id)}>
+                Dodaj do koszyka
+              </button>
               <br />
               <button onClick={() => handleDelete(med.id)}>Usuń</button>
             </li>

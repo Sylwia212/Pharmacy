@@ -8,6 +8,7 @@ import SecretPage from "./pages/SecretPage";
 import UsersListPage from "./pages/UsersListPage";
 import UserEditPage from "./pages/UserEditPage";
 import AddMedicationPage from "./pages/AddMedicationPage";
+import CartPage from "./pages/CartPage";
 
 function App() {
   const [token, setToken] = useState("");
@@ -57,11 +58,14 @@ function App() {
           <Link to="/dodaj" style={{ marginRight: "10px" }}>
             Dodaj lek
           </Link>
+          <Link to="/koszyk" style={{ marginRight: "10px" }}>
+            Koszyk
+          </Link>
           {token && <button onClick={handleLogout}>Wyloguj</button>}
         </nav>
 
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage userId={1}/>} />
           <Route path="/rejestracja" element={<RegisterPage />} />
           <Route
             path="/logowanie"
@@ -74,6 +78,7 @@ function App() {
             element={<UserEditPage token={token} />}
           />
           <Route path="/dodaj" element={<AddMedicationPage />} />
+          <Route path="/koszyk" element={<CartPage userId={1} />} />
         </Routes>
       </div>
     </BrowserRouter>
