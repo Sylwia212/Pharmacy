@@ -78,3 +78,31 @@ export async function getMedications() {
   const response = await fetch(`${API_URL}/api/medications`);
   return await response.json();
 }
+
+export async function addMedication(formData) {
+  const response = await fetch(`${API_URL}/api/medications`, {
+    method: "POST",
+    body: formData,
+  });
+  return await response.json();
+}
+
+
+export async function updateMedication(id, medicationData) {
+  const response = await fetch(`${API_URL}/api/medications/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(medicationData),
+  });
+  return await response.json();
+}
+
+
+export async function deleteMedication(id) {
+  const response = await fetch(`${API_URL}/api/medications/${id}`, {
+    method: "DELETE",
+  });
+  return await response.json();
+}

@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import SecretPage from "./pages/SecretPage";
 import UsersListPage from "./pages/UsersListPage";
 import UserEditPage from "./pages/UserEditPage";
+import AddMedicationPage from "./pages/AddMedicationPage";
 
 function App() {
   const [token, setToken] = useState("");
@@ -53,6 +54,9 @@ function App() {
           <Link to="/users" style={{ marginRight: "10px" }}>
             Użytkownicy
           </Link>
+          <Link to="/dodaj" style={{ marginRight: "10px" }}>
+            Dodaj lek
+          </Link>
           {token && <button onClick={handleLogout}>Wyloguj</button>}
         </nav>
 
@@ -65,7 +69,11 @@ function App() {
           />
           <Route path="/secret" element={<SecretPage token={token} />} />
           <Route path="/users" element={<UsersListPage token={token} />} />
-          <Route path="/users/edit/:id" element={<UserEditPage token={token}/>} />
+          <Route
+            path="/users/edit/:id"
+            element={<UserEditPage token={token} />}
+          />
+          <Route path="/dodaj" element={<AddMedicationPage />} />
         </Routes>
       </div>
     </BrowserRouter>

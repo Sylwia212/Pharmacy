@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getMedications } from "../api";
+import { getMedications, deleteMedication } from "../api";
 
 function HomePage() {
   const [medications, setMedications] = useState([]);
@@ -11,16 +11,23 @@ function HomePage() {
         const data = await getMedications();
         setMedications(data);
       } catch (error) {
-        setErrorMsg("Nie udało się załadować listy leków.");
+        setErrorMsg("Błąd podczas pobierania listy leków.");
       }
     };
 
     fetchMedications();
   }, []);
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Czy na pewno chcesz usunąć ten lek?")) {
+      await deleteMedication(id);
+      setMedications(medications.filter((med) => med.id !== id));
+    }
+  };
+
   return (
     <div style={{ margin: "20px" }}>
-      <h2>Lista produktów</h2>
+      <h2>Lista leków</h2>
 
       {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
 
@@ -28,8 +35,19 @@ function HomePage() {
         {medications.length > 0 ? (
           medications.map((med) => (
             <li key={med.id}>
-              <strong>{med.name}</strong> - {med.description} <br />
+              <strong>{med.name}</strong> - {med.description}
+              <br />
               Cena: {med.price} PLN, Dostępność: {med.stock_quantity} szt.
+              <br />
+              {med.imageUrl && (
+                <img
+                  src={`http://localhost:3000${med.imageUrl}`}
+                  alt={med.name}
+                  width="150"
+                />
+              )}
+              <br />
+              <button onClick={() => handleDelete(med.id)}>Usuń</button>
             </li>
           ))
         ) : (
