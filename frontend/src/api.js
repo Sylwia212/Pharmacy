@@ -31,3 +31,45 @@ export async function getSecretData(token) {
   });
   return await response.json();
 }
+
+export async function getAllUsers(token) {
+  const response = await fetch(`${API_URL}/api/users`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return await response.json();
+}
+
+export async function getUserById(userId, token) {
+  const response = await fetch(`${API_URL}/api/users/${userId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return await response.json();
+}
+
+export async function updateUser(userId, updates, token) {
+  const response = await fetch(`${API_URL}/api/users/${userId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+  return await response.json();
+}
+
+export async function deleteUser(userId, token) {
+  const response = await fetch(`${API_URL}/api/users/${userId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return await response.json();
+}
