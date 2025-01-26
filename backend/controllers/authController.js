@@ -79,3 +79,7 @@ exports.login = async (req, res) => {
     return res.status(500).json({ message: "Błąd podczas logowania." });
   }
 };
+
+
+exports.users = users;
+exports.currentId = currentId;
