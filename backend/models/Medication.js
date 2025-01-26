@@ -17,6 +17,10 @@ const Medication = sequelize.define("Medication", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 module.exports = Medication;

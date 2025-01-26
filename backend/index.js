@@ -20,6 +20,8 @@ app.use("/api/users", userRoutes);
 
 app.use("/api/medications", medicationRoutes);
 
+app.use("/uploads", express.static("uploads"));
+
 app.get("/api/secret", authenticateToken, (req, res) => {
   return res.json({
     message: `Tajne dane dla użytkownika: ${req.user.email}`,
@@ -30,15 +32,10 @@ app.get("/", (req, res) => {
   res.send("Serwer działa poprawnie!");
 });
 
-
-sequelize.sync({ force: false })  
-  .then(() => {
-    console.log("Baza danych zsynchronizowana");
-  })
-  .catch((err) => {
-    console.error("Błąd synchronizacji bazy danych:", err);
-  });
-
+sequelize
+  .sync({ alter: true })
+  .then(() => console.log("Baza danych zsynchronizowana"))
+  .catch((err) => console.error("Błąd synchronizacji bazy danych:", err));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

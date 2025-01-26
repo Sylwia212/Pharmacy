@@ -1,4 +1,19 @@
 const Medication = require("../models/Medication");
+const path = require("path");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+exports.uploadImage = upload.single("image");
 
 exports.getAllMedications = async (req, res) => {
   try {
@@ -11,13 +26,16 @@ exports.getAllMedications = async (req, res) => {
 
 exports.addMedication = async (req, res) => {
   try {
-    const { name, description, price, stock_quantity } = req.body;
+    const { name, description, price, stock_quantity, imageUrl } = req.body;
+
     const newMedication = await Medication.create({
       name,
       description,
       price,
       stock_quantity,
+      imageUrl: imageUrl || null,
     });
+
     res.status(201).json(newMedication);
   } catch (error) {
     res.status(500).json({ error: "Błąd podczas dodawania leku" });
