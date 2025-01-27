@@ -1,9 +1,9 @@
-// backend/controllers/userController.js
 const { users } = require("./authController"); 
-// ^ wczytujemy tę samą tablicę in-memory (uwaga: w realnym projekcie byłaby DB)
 
 exports.getAllUsers = (req, res) => {
-  // Prosty listing wszystkich użytkowników bez hasła:
+  if (!users) {
+    return res.status(500).json({ message: "Brak danych użytkowników" });
+  }
   const safeUsers = users.map(({ passwordHash, ...rest }) => rest);
   return res.json(safeUsers);
 };
