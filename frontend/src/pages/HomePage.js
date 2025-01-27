@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getMedications, deleteMedication, addToCart } from "../api";
 
-function HomePage({ userId }) {
+function HomePage({ userId, token }) {
   const [medications, setMedications] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -26,8 +26,17 @@ function HomePage({ userId }) {
   };
 
   const handleAddToCart = async (medicationId) => {
-    await addToCart(userId, medicationId, 1);
-    alert("Dodano do koszyka!");
+    try {
+      if (!token) {
+        alert("Musisz być zalogowany, aby dodać produkt do koszyka.");
+        return;
+      }
+      await addToCart(userId, medicationId, 1);
+      alert("Dodano do koszyka!");
+    } catch (error) {
+      console.error("Błąd podczas dodawania do koszyka:", error);
+      alert("Wystąpił błąd podczas dodawania do koszyka.");
+    }
   };
 
   return (

@@ -3,20 +3,19 @@ import { getCart, removeFromCart } from "../api";
 
 function CartPage({ userId }) {
   const [cartItems, setCartItems] = useState([]);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     async function fetchCart() {
       try {
         const items = await getCart(userId);
-        console.log("Produkty w koszyku:", items);
         setCartItems(items);
       } catch (error) {
-        console.error("Błąd pobierania koszyka:", error);
+        setErrorMsg("Błąd podczas pobierania koszyka.");
       }
     }
     fetchCart();
   }, [userId]);
-  
 
   const handleRemove = async (id) => {
     await removeFromCart(id);
@@ -26,11 +25,12 @@ function CartPage({ userId }) {
   return (
     <div>
       <h2>Koszyk</h2>
-      {Array.isArray(cartItems) && cartItems.length > 0 ? (
+      {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+      {cartItems.length > 0 ? (
         <ul>
           {cartItems.map((item) => (
             <li key={item.id}>
-              {item.Medication?.name || "Nieznany lek"} - {item.quantity} szt.
+              {item.Medication.name} - {item.quantity} szt.
               <button onClick={() => handleRemove(item.id)}>Usuń</button>
             </li>
           ))}
@@ -40,7 +40,6 @@ function CartPage({ userId }) {
       )}
     </div>
   );
-  
 }
 
 export default CartPage;

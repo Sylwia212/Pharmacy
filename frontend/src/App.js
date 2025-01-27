@@ -66,7 +66,8 @@ function App() {
         {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
 
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage token={token} userId={1} />} />
+
           <Route path="/rejestracja" element={<RegisterPage />} />
           <Route
             path="/logowanie"
@@ -78,7 +79,7 @@ function App() {
             element={<UserEditPage token={token} />}
           />
           <Route path="/dodaj" element={<AddMedicationPage />} />
-          <Route path="/koszyk" element={<CartPage />} />
+          <Route path="/koszyk" element={<CartPage userId={1} />} />
         </Routes>
       </div>
     </BrowserRouter>

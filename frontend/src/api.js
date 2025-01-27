@@ -121,24 +121,40 @@ export async function deleteMedication(id) {
 }
 
 export async function addToCart(userId, medicationId, quantity) {
-  const response = await fetch(`${API_URL}/api/cart`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userId,
-      medicationId,
-      quantity,
-    }),
-  });
-  return await response.json();
+  try {
+    const response = await fetch(`${API_URL}/api/cart`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        userId,
+        medicationId,
+        quantity,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Błąd podczas dodawania do koszyka");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Błąd dodawania do koszyka:", error);
+    throw error;
+  }
 }
 
 export async function getCart(userId) {
   const response = await fetch(`${API_URL}/api/cart/${userId}`, {
     method: "GET",
+    credentials: "include",
   });
+
+  if (!response.ok) {
+    throw new Error("Błąd pobierania koszyka");
+  }
   return await response.json();
 }
 

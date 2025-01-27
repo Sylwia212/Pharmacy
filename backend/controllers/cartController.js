@@ -21,7 +21,7 @@ exports.addToCart = async (req, res) => {
       cartItem = await Cart.create({ userId, medicationId, quantity });
     }
 
-    res.status(200).json(cartItem);
+    res.status(200).json({ message: "Dodano do koszyka", cartItem });
   } catch (error) {
     console.error("Błąd podczas dodawania do koszyka:", error);
     res.status(500).json({ message: "Błąd serwera" });
@@ -31,15 +31,15 @@ exports.addToCart = async (req, res) => {
 exports.getCart = async (req, res) => {
   try {
     const { userId } = req.params;
-
     const cartItems = await Cart.findAll({
       where: { userId },
       include: [{ model: Medication }],
     });
 
-    if (!cartItems.length) {
-      return res.status(404).json({ message: "Koszyk jest pusty." });
+    if (cartItems.length === 0) {
+      return res.status(200).json({ message: "Koszyk jest pusty" });
     }
+
     res.status(200).json(cartItems);
   } catch (error) {
     res.status(500).json({ message: "Błąd pobierania koszyka" });
