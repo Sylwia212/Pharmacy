@@ -41,11 +41,20 @@ function UsersListPage({ token }) {
   }, [token]);
 
   const handleDelete = async (userId) => {
-    if (!token) return;
+    if (!token) {
+      setErrorMsg("Brak autoryzacji.");
+      return;
+    }
+
     if (window.confirm("Czy na pewno chcesz usunąć tego użytkownika?")) {
       try {
-        await deleteUser(userId, token);
-        setUsers(users.filter((user) => user.id !== userId));
+        const response = await deleteUser(userId, token);
+
+        if (response.message === "Użytkownik usunięty") {
+          setUsers(users.filter((user) => user.id !== userId));
+        } else {
+          throw new Error("Nie udało się usunąć użytkownika");
+        }
       } catch (err) {
         setErrorMsg("Błąd podczas usuwania użytkownika.");
       }

@@ -57,19 +57,18 @@ exports.updateUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
   try {
-    const id = parseInt(req.params.id, 10);
     const user = await User.findByPk(id);
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "Użytkownik nie został znaleziony." });
+      return res.status(404).json({ message: "Użytkownik nie znaleziony" });
     }
 
     await user.destroy();
-    res.json({ message: "Użytkownik usunięty." });
+    return res.status(200).json({ message: "Użytkownik usunięty" });
   } catch (error) {
-    console.error("Błąd podczas usuwania użytkownika:", error);
-    res.status(500).json({ message: "Błąd podczas usuwania użytkownika." });
+    return res
+      .status(500)
+      .json({ message: "Błąd serwera podczas usuwania użytkownika" });
   }
 };

@@ -17,7 +17,7 @@ export async function loginUser(email, password) {
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include", 
+    credentials: "include",
     body: JSON.stringify({ email, password }),
   });
   return await response.json();
@@ -34,13 +34,13 @@ export async function getSecretData(token) {
 }
 
 export async function getAllUsers(token) {
-  const response = await fetch("http://localhost:3000/api/users", {
+  const response = await fetch(`${API_URL}/api/users`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    credentials: "include", 
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -76,9 +76,16 @@ export async function deleteUser(userId, token) {
   const response = await fetch(`${API_URL}/api/users/${userId}`, {
     method: "DELETE",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+    credentials: "include",
   });
+
+  if (!response.ok) {
+    throw new Error("Błąd podczas usuwania użytkownika");
+  }
+
   return await response.json();
 }
 
@@ -114,7 +121,7 @@ export async function deleteMedication(id) {
 }
 
 export async function addToCart(userId, medicationId, quantity) {
-  const response = await fetch(`http://localhost:3000/api/cart`, {
+  const response = await fetch(`${API_URL}/api/cart`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -143,7 +150,7 @@ export async function removeFromCart(cartItemId) {
 }
 
 export async function logoutUser() {
-  await fetch("http://localhost:3000/api/auth/logout", {
+  await fetch(`${API_URL}/api/auth/logout`, {
     method: "POST",
     credentials: "include",
   });
