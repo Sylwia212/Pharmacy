@@ -1,43 +1,75 @@
-const { users } = require("./authController"); 
+const bcrypt = require("bcrypt");
+const User = require("../models/User");
 
-exports.getAllUsers = (req, res) => {
-  if (!users) {
-    return res.status(500).json({ message: "Brak danych użytkowników" });
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ["id", "email", "role"],
+    });
+    res.json(users);
+  } catch (error) {
+    console.error("Błąd pobierania użytkowników:", error);
+    res.status(500).json({ message: "Błąd podczas pobierania użytkowników." });
   }
-  const safeUsers = users.map(({ passwordHash, ...rest }) => rest);
-  return res.json(safeUsers);
 };
 
-exports.getUser = (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const user = users.find((u) => u.id === id);
-  if (!user) {
-    return res.status(404).json({ message: "Użytkownik nie został znaleziony." });
+exports.getUser = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const user = await User.findByPk(id, {
+      attributes: ["id", "email", "role"],
+    });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Użytkownik nie został znaleziony." });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Błąd pobierania użytkownika:", error);
+    res.status(500).json({ message: "Błąd podczas pobierania użytkownika." });
   }
-  const { passwordHash, ...rest } = user;
-  return res.json(rest);
 };
 
-exports.updateUser = (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const user = users.find((u) => u.id === id);
-  if (!user) {
-    return res.status(404).json({ message: "Użytkownik nie został znaleziony." });
+exports.updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  try {
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Użytkownik nie został znaleziony." });
+    }
+
+    if (password) {
+      user.passwordHash = await bcrypt.hash(password, 10);
+    }
+
+    await user.save();
+    res.json({ message: "Użytkownik zaktualizowany.", user });
+  } catch (error) {
+    console.error("Błąd podczas aktualizacji użytkownika:", error);
+    res.status(500).json({ message: "Błąd podczas aktualizacji użytkownika." });
   }
-
-  const { email, role } = req.body;
-  if (email) user.email = email;
-  if (role) user.role = role;
-
-  return res.json({ message: "Użytkownik zaktualizowany.", user });
 };
 
-exports.deleteUser = (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = users.findIndex((u) => u.id === id);
-  if (index === -1) {
-    return res.status(404).json({ message: "Użytkownik nie został znaleziony." });
+exports.deleteUser = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Użytkownik nie został znaleziony." });
+    }
+
+    await user.destroy();
+    res.json({ message: "Użytkownik usunięty." });
+  } catch (error) {
+    console.error("Błąd podczas usuwania użytkownika:", error);
+    res.status(500).json({ message: "Błąd podczas usuwania użytkownika." });
   }
-  users.splice(index, 1);
-  return res.json({ message: "Użytkownik usunięty." });
 };

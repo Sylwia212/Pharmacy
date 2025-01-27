@@ -5,6 +5,8 @@ const cookieParser = require("cookie-parser");
 
 const sequelize = require("./config/database");
 const Medication = require("./models/Medication");
+const User = require("./models/User");
+
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
