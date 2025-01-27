@@ -17,6 +17,7 @@ export async function loginUser(email, password) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", 
     body: JSON.stringify({ email, password }),
   });
   return await response.json();
@@ -33,12 +34,19 @@ export async function getSecretData(token) {
 }
 
 export async function getAllUsers(token) {
-  const response = await fetch(`${API_URL}/api/users`, {
+  const response = await fetch("http://localhost:3000/api/users", {
     method: "GET",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+    credentials: "include", 
   });
+
+  if (!response.ok) {
+    throw new Error("Błąd pobierania użytkowników");
+  }
+
   return await response.json();
 }
 
@@ -132,4 +140,20 @@ export async function removeFromCart(cartItemId) {
     method: "DELETE",
   });
   return await response.json();
+}
+
+export async function logoutUser() {
+  await fetch("http://localhost:3000/api/auth/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+}
+
+export function getCookie(name) {
+  const cookies = document.cookie.split("; ");
+  for (let cookie of cookies) {
+    const [key, value] = cookie.split("=");
+    if (key === name) return value;
+  }
+  return null;
 }

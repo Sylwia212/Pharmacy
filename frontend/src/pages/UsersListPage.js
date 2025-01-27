@@ -8,18 +8,28 @@ function UsersListPage({ token }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersData = await getAllUsers();
+        setUsers(usersData);
+      } catch (error) {
+        setErrorMsg(error.message);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
     if (token) {
       getAllUsers(token)
         .then((data) => {
-          if (data.message) {
-            setErrorMsg(data.message);
-          } else {
-            setUsers(data);
-          }
+          setUsers(data);
           setLoading(false);
         })
         .catch((err) => {
-          setErrorMsg("Błąd pobierania danych.");
+          console.error("Błąd podczas pobierania użytkowników:", err);
+          setErrorMsg(`Błąd pobierania danych: ${err.message}`);
           setLoading(false);
         });
     } else {
