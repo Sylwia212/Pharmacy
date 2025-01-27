@@ -65,8 +65,8 @@ export async function updateUser(userId, updates, token) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
+    credentials: "include",
     body: JSON.stringify(updates),
   });
   return await response.json();

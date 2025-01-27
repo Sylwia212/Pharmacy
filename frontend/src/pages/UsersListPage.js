@@ -21,21 +21,23 @@ function UsersListPage({ token }) {
   }, []);
 
   useEffect(() => {
-    if (token) {
-      getAllUsers(token)
-        .then((data) => {
-          setUsers(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Błąd podczas pobierania użytkowników:", err);
-          setErrorMsg(`Błąd pobierania danych: ${err.message}`);
-          setLoading(false);
-        });
-    } else {
-      setErrorMsg("Musisz się zalogować, aby zobaczyć użytkowników.");
-      setLoading(false);
-    }
+    const fetchUsers = async () => {
+      if (!token) {
+        setErrorMsg("Musisz się zalogować, aby zobaczyć użytkowników.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const usersData = await getAllUsers(token);
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Błąd podczas pobierania użytkowników:", error);
+        setErrorMsg(`Błąd pobierania danych: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
   }, [token]);
 
   const handleDelete = async (userId) => {

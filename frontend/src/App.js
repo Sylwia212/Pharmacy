@@ -54,6 +54,9 @@ function App() {
           <Link to="/users" style={{ marginRight: "10px" }}>
             Użytkownicy
           </Link>
+          <Link to="/dodaj" style={{ marginRight: "10px" }}>
+            Dodaj lek
+          </Link>
           <Link to="/koszyk" style={{ marginRight: "10px" }}>
             Koszyk
           </Link>

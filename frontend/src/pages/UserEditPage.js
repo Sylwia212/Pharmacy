@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getUserById, updateUser } from "../api";
 
@@ -6,10 +6,10 @@ function UserEditPage({ token }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
   const [responseMsg, setResponseMsg] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     const loadUser = async () => {
@@ -19,8 +19,6 @@ function UserEditPage({ token }) {
           return;
         }
         const userData = await getUserById(id, token);
-        setEmail(userData.email);
-        setRole(userData.role);
         setLoading(false);
       } catch (err) {
         setResponseMsg("Błąd przy pobieraniu użytkownika.");
@@ -32,18 +30,24 @@ function UserEditPage({ token }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setResponseMsg("Hasła nie są zgodne.");
+      return;
+    }
+
     try {
       if (!token) {
         setResponseMsg("Brak autoryzacji.");
         return;
       }
-      await updateUser(id, { email, role }, token);
-      setResponseMsg("Zaktualizowano pomyślnie!");
+      await updateUser(id, { password }, token);
+      setResponseMsg("Hasło zostało zmienione pomyślnie!");
       setTimeout(() => {
         navigate("/users");
       }, 1000);
     } catch (err) {
-      setResponseMsg("Błąd podczas aktualizacji użytkownika.");
+      setResponseMsg("Błąd podczas zmiany hasła.");
     }
   };
 
@@ -53,26 +57,32 @@ function UserEditPage({ token }) {
 
   return (
     <div>
-      <h2>Edycja użytkownika (ID: {id})</h2>
-      {responseMsg && <p>{responseMsg}</p>}
+      <h2>Zmiana hasła dla użytkownika (ID: {id})</h2>
+      {responseMsg && (
+        <p style={{ color: responseMsg.includes("Błąd") ? "red" : "green" }}>
+          {responseMsg}
+        </p>
+      )}
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Email: </label>
+          <label>Nowe hasło: </label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
         <div>
-          <label>Rola: </label>
+          <label>Potwierdź hasło: </label>
           <input
-            type="text"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
           />
         </div>
-        <button type="submit">Zapisz</button>
+        <button type="submit">Zmień hasło</button>
       </form>
     </div>
   );
