@@ -2,11 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const mqtt = require("mqtt");
+const client = mqtt.connect("mqtt://broker.hivemq.com");
 
 const sequelize = require("./config/database");
 const Medication = require("./models/Medication");
 const User = require("./models/User");
-
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -44,6 +45,21 @@ app.get("/api/secret", authenticateToken, (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("Serwer działa poprawnie!");
+});
+
+client.on("connect", () => {
+  console.log("Połączono z brokerem MQTT");
+  client.subscribe("orders/status", (err) => {
+    if (err) {
+      console.error("Błąd subskrypcji:", err);
+    } else {
+      console.log("Subskrypcja na temat: orders/status");
+    }
+  });
+});
+
+client.on("message", (topic, message) => {
+  console.log(`Otrzymano wiadomość na temat "${topic}": ${message.toString()}`);
 });
 
 sequelize
