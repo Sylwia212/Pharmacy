@@ -14,6 +14,7 @@ const userRoutes = require("./routes/user.routes");
 const authenticateToken = require("./middlewares/authenticateToken");
 const medicationRoutes = require("./routes/medication.routes");
 const cartRoutes = require("./routes/cart.routes");
+const orderRoutes = require("./routes/order.routes");
 
 const app = express();
 app.use(express.json());
@@ -36,6 +37,7 @@ app.use("/api/medications", medicationRoutes);
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.get("/api/secret", authenticateToken, (req, res) => {
   return res.json({

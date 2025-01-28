@@ -1,7 +1,12 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 const Medication = sequelize.define("Medication", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -19,7 +24,6 @@ const Medication = sequelize.define("Medication", {
   },
   imageUrl: {
     type: DataTypes.STRING,
-    allowNull: true,
   },
 });
 
