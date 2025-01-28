@@ -16,7 +16,7 @@ export async function loginUser(email, password) {
   const response = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include", 
+    credentials: "include",
     body: JSON.stringify({ email, password }),
   });
   return await response.json();
@@ -101,21 +101,13 @@ export async function addMedication(formData) {
   return await response.json();
 }
 
-export async function updateMedication(id, medicationData) {
-  const response = await fetch(`${API_URL}/api/medications/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(medicationData),
-  });
-  return await response.json();
-}
-
 export async function deleteMedication(id) {
   const response = await fetch(`${API_URL}/api/medications/${id}`, {
     method: "DELETE",
   });
+  if (!response.ok) {
+    throw new Error("Błąd podczas usuwania leku");
+  }
   return await response.json();
 }
 
@@ -238,7 +230,6 @@ export async function placeOrder(userId, address, cartItems) {
     })),
   };
 
-
   const response = await fetch("http://localhost:3000/api/orders", {
     method: "POST",
     headers: {
@@ -273,5 +264,24 @@ export async function getUserOrders(userId) {
     throw new Error("Nie udało się pobrać zamówień!");
   }
 
+  return await response.json();
+}
+
+export async function getMedicationById(id) {
+  const response = await fetch(`http://localhost:3000/api/medications/${id}`);
+  if (!response.ok) {
+    throw new Error("Nie znaleziono leku");
+  }
+  return await response.json();
+}
+
+export async function updateMedication(id, formData) {
+  const response = await fetch(`http://localhost:3000/api/medications/${id}`, {
+    method: "PUT",
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error("Błąd podczas aktualizacji leku");
+  }
   return await response.json();
 }

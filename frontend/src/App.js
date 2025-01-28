@@ -7,9 +7,10 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import UsersListPage from "./pages/UsersListPage";
 import UserEditPage from "./pages/UserEditPage";
-import AddMedicationPage from "./pages/AddMedicationPage";
 import CartPage from "./pages/CartPage";
 import OrdersPage from "./pages/OrdersPage";
+import EditMedicationPage from "./pages/EditMedicationPage";
+import MedicationList from "./pages/MedicationsList";
 
 function App() {
   const [token, setToken] = useState("");
@@ -84,15 +85,14 @@ function App() {
           <Link to="/users" style={{ marginRight: "10px" }}>
             Użytkownicy
           </Link>
-          <Link to="/dodaj" style={{ marginRight: "10px" }}>
-            Dodaj lek
-          </Link>
           <Link to="/koszyk" style={{ marginRight: "10px" }}>
             Koszyk
           </Link>
           <Link to="/zamowienia" style={{ marginRight: "10px" }}>
             Zamówienia
           </Link>
+
+          <Link to="/medications">Leki</Link>
 
           {token && <button onClick={handleLogout}>Wyloguj</button>}
         </nav>
@@ -125,7 +125,6 @@ function App() {
             path="/users/edit/:id"
             element={<UserEditPage token={token} />}
           />
-          <Route path="/dodaj" element={<AddMedicationPage />} />
           <Route
             path="/koszyk"
             element={
@@ -137,6 +136,11 @@ function App() {
             }
           />
           <Route path="/zamowienia" element={<OrdersPage userId={userId} />} />
+          <Route
+            path="/medications"
+            element={<MedicationList />}
+          />
+          <Route path="/medications/edit/:id" element={<EditMedicationPage />} />
         </Routes>
       </div>
     </BrowserRouter>

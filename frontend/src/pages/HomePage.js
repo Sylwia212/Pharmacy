@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getMedications, deleteMedication, addToCart } from "../api";
+import { getMedications, addToCart } from "../api";
 
 function HomePage({ userId, token }) {
   const [medications, setMedications] = useState([]);
@@ -18,13 +18,6 @@ function HomePage({ userId, token }) {
     fetchMedications();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Czy na pewno chcesz usunąć ten lek?")) {
-      await deleteMedication(id);
-      setMedications(medications.filter((med) => med.id !== id));
-    }
-  };
-
   const handleAddToCart = async (medicationId) => {
     if (!token || !userId) {
       alert("Musisz być zalogowany, aby dodać produkt do koszyka.");
@@ -32,7 +25,7 @@ function HomePage({ userId, token }) {
     }
 
     try {
-      const response = await addToCart(userId, medicationId, 1);
+      await addToCart(userId, medicationId, 1);
       alert("Dodano do koszyka!");
     } catch (error) {
       alert("Wystąpił problem podczas dodawania do koszyka.");
@@ -63,8 +56,6 @@ function HomePage({ userId, token }) {
               <button onClick={() => handleAddToCart(med.id)}>
                 Dodaj do koszyka
               </button>
-              <br />
-              <button onClick={() => handleDelete(med.id)}>Usuń</button>
             </li>
           ))
         ) : (
