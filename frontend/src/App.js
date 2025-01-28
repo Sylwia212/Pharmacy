@@ -9,33 +9,37 @@ import UsersListPage from "./pages/UsersListPage";
 import UserEditPage from "./pages/UserEditPage";
 import AddMedicationPage from "./pages/AddMedicationPage";
 import CartPage from "./pages/CartPage";
+import OrdersPage from "./pages/OrdersPage";
 
 function App() {
   const [token, setToken] = useState("");
   const [userId, setUserId] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const getCookie = (name) => {
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+      const [key, value] = cookie.split("=");
+      if (key === name) return value;
+    }
+    return null;
+  };
+
   const parseJwt = (token) => {
     try {
-      if (!token) return null;
-      const base64Url = token.split(".")[1];
-      if (!base64Url) return null;
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      return JSON.parse(atob(base64));
+      return JSON.parse(atob(token.split(".")[1]));
     } catch (e) {
-      console.error("Błąd dekodowania tokena JWT:", e);
       return null;
     }
   };
 
   useEffect(() => {
-    const savedToken = Cookies.get("jwtToken");
-    if (savedToken) {
-      setToken(savedToken);
-      const decoded = parseJwt(savedToken);
-      setUserId(decoded?.userId || null);
-    } else {
-      setErrorMsg("Brak tokena autoryzacji, zaloguj się ponownie.");
+    const token = getCookie("jwtToken");
+    if (token) {
+      const decoded = parseJwt(token);
+      if (decoded?.userId) {
+        setUserId(decoded.userId);
+      }
     }
   }, []);
 
@@ -47,8 +51,6 @@ function App() {
   };
 
   const handleLogout = async () => {
-    console.log("Wylogowywanie...");
-
     try {
       await fetch("http://localhost:3000/api/auth/logout", {
         method: "POST",
@@ -63,7 +65,6 @@ function App() {
     Cookies.remove("jwtToken");
     setToken("");
     setUserId(null);
-    console.log("Wylogowano pomyślnie, token usunięty!");
     window.location.href = "/logowanie";
   };
 
@@ -89,6 +90,10 @@ function App() {
           <Link to="/koszyk" style={{ marginRight: "10px" }}>
             Koszyk
           </Link>
+          <Link to="/zamowienia" style={{ marginRight: "10px" }}>
+            Zamówienia
+          </Link>
+
           {token && <button onClick={handleLogout}>Wyloguj</button>}
         </nav>
 
@@ -121,7 +126,17 @@ function App() {
             element={<UserEditPage token={token} />}
           />
           <Route path="/dodaj" element={<AddMedicationPage />} />
-          <Route path="/koszyk" element={<CartPage userId={userId} />} />
+          <Route
+            path="/koszyk"
+            element={
+              userId !== null ? (
+                <CartPage userId={userId} />
+              ) : (
+                <p>Ładowanie...</p>
+              )
+            }
+          />
+          <Route path="/zamowienia" element={<OrdersPage userId={userId} />} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -15,10 +15,8 @@ export async function registerUser(email, password) {
 export async function loginUser(email, password) {
   const response = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include", 
     body: JSON.stringify({ email, password }),
   });
   return await response.json();
@@ -122,7 +120,7 @@ export async function deleteMedication(id) {
 }
 
 export async function addToCart(userId, medicationId, quantity) {
-  const token = Cookies.get("jwtToken"); 
+  const token = Cookies.get("jwtToken");
   console.log("Token używany w addToCart:", token);
 
   if (!token) {
@@ -192,13 +190,88 @@ export function getCookie(name) {
 }
 
 export async function clearCart(userId) {
+  const token = Cookies.get("jwtToken");
+
+  if (!token) {
+    throw new Error("Brak tokena autoryzacji. Zaloguj się ponownie.");
+  }
+
   const response = await fetch(
     `http://localhost:3000/api/cart/clear/${userId}`,
     {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       credentials: "include",
     }
   );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Błąd podczas czyszczenia koszyka.");
+  }
+
   return await response.json();
 }
 
+export async function placeOrder(userId, address, cartItems) {
+  if (!userId || !address || cartItems.length === 0) {
+    throw new Error("Brak wymaganych danych do zamówienia.");
+  }
+
+  const token = Cookies.get("jwtToken");
+
+  if (!token) {
+    throw new Error("Brak tokena autoryzacji. Zaloguj się ponownie.");
+  }
+
+  userId = userId.userId || Number(userId);
+
+  const orderData = {
+    userId,
+    address,
+    medications: cartItems.map((item) => ({
+      medicationId: item.Medication.id,
+      quantity: item.quantity,
+    })),
+  };
+
+
+  const response = await fetch("http://localhost:3000/api/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+    body: JSON.stringify(orderData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Błąd podczas składania zamówienia.");
+  }
+
+  return await response.json();
+}
+
+export async function getUserOrders(userId) {
+  const token = Cookies.get("jwtToken");
+
+  const response = await fetch(`http://localhost:3000/api/orders/${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Nie udało się pobrać zamówień!");
+  }
+
+  return await response.json();
+}

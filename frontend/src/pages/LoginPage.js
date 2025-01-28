@@ -1,47 +1,42 @@
 import React, { useState } from "react";
-import { loginUser } from "../api";
-import Cookies from "js-cookie";
+import { loginUser } from "../api"; 
 
 function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     try {
       const response = await loginUser(email, password);
       if (response.token) {
-        Cookies.set("jwtToken", response.token, { expires: 1 }); 
-        onLoginSuccess(response.token);
-        alert("Logowanie zakończone sukcesem!");
-        window.location.href = "/";
+        document.cookie = `jwtToken=${response.token}; path=/; max-age=86400`; 
+        onLoginSuccess(response.token); 
       } else {
-        alert("Błąd logowania. Sprawdź swoje dane.");
+        alert("Błąd logowania: Niepoprawne dane.");
       }
     } catch (error) {
-      alert("Wystąpił problem podczas logowania.");
       console.error("Błąd logowania:", error);
+      alert("Wystąpił problem podczas logowania.");
     }
   };
 
   return (
     <div>
       <h2>Logowanie</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
         <input
           type="password"
           placeholder="Hasło"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
         />
         <button type="submit">Zaloguj</button>
       </form>
