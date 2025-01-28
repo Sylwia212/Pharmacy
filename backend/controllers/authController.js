@@ -37,12 +37,16 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(401).json({ message: "Nieprawidłowy email lub hasło." });
+      return res
+        .status(401)
+        .json({ message: "Nieprawidłowy email lub hasło." });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Nieprawidłowy email lub hasło." });
+      return res
+        .status(401)
+        .json({ message: "Nieprawidłowy email lub hasło." });
     }
 
     const token = jwt.sign(
@@ -51,10 +55,12 @@ exports.login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.cookie("authToken", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 3600000, // 1 godzina
+    res.cookie("jwtToken", token, {
+      httpOnly: false,
+      secure: false,
+      sameSite: "Lax",
+      path: "/",
+      maxAge: 3600000,
     });
 
     return res.status(200).json({
@@ -71,7 +77,6 @@ exports.login = async (req, res) => {
     return res.status(500).json({ message: "Błąd podczas logowania." });
   }
 };
-
 
 exports.logout = (req, res) => {
   res.clearCookie("authToken");
