@@ -132,7 +132,7 @@ function App() {
               userId !== null ? (
                 <CartPage userId={userId} />
               ) : (
-                <p>Ładowanie...</p>
+                <p>🔒 Musisz być zalogowany, aby zobaczyć swój koszyk! </p>
               )
             }
           />

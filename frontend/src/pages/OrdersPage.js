@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUserOrders } from "../api"; 
+import { getUserOrders } from "../api";
 
 function OrdersPage({ userId }) {
   const [orders, setOrders] = useState([]);
@@ -24,7 +24,8 @@ function OrdersPage({ userId }) {
     fetchOrders();
   }, [userId]);
 
-  if (loading) return <p>Ładowanie zamówień...</p>;
+  if (loading)
+    return <p>🔒 Musisz być zalogowany, aby zobaczyć historię zamówień!</p>;
 
   return (
     <div>

@@ -1,24 +1,30 @@
 import React, { useState } from "react";
-import { loginUser } from "../api"; 
+import { loginUser } from "../api";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       const response = await loginUser(email, password);
+
       if (response.token) {
-        document.cookie = `jwtToken=${response.token}; path=/; max-age=86400`; 
-        onLoginSuccess(response.token); 
+        onLoginSuccess(response.token);
+        alert("Zalogowano pomyślnie!");
+        navigate("/");
       } else {
-        alert("Błąd logowania: Niepoprawne dane.");
+        alert("Niepoprawne dane!");
+        setError("Nieprawidłowe dane logowania.");
       }
-    } catch (error) {
-      console.error("Błąd logowania:", error);
-      alert("Wystąpił problem podczas logowania.");
+    } catch (err) {
+      setError("Wystąpił błąd podczas logowania.");
     }
   };
 
