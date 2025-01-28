@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const OrderItem = require("../models/OrderItem");
 const Medication = require("../models/Medication");
+const Cart = require("../models/Cart");
 
 exports.createOrder = async (req, res) => {
   try {
@@ -23,6 +24,8 @@ exports.createOrder = async (req, res) => {
     }));
 
     await OrderItem.bulkCreate(orderItems);
+
+    await Cart.destroy({ where: { userId } });
 
     res
       .status(201)
