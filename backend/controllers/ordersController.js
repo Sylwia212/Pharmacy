@@ -3,6 +3,9 @@ const OrderItem = require("../models/OrderItem");
 const Medication = require("../models/Medication");
 const Cart = require("../models/Cart");
 
+const mqtt = require("mqtt");
+const client = mqtt.connect("mqtt://broker.hivemq.com");
+
 exports.createOrder = async (req, res) => {
   try {
     const { userId, address, medications } = req.body;
@@ -25,7 +28,13 @@ exports.createOrder = async (req, res) => {
 
     await OrderItem.bulkCreate(orderItems);
 
-    await Cart.destroy({ where: { userId } });
+    client.publish(
+      `orders/user/${userId}`,
+      JSON.stringify({ orderId: newOrder.id, status: "pending" }),
+      (err) => {
+        console.error("Błąd publikowania MQTT:", err);
+      }
+    );
 
     res
       .status(201)
@@ -49,5 +58,29 @@ exports.getUserOrders = async (req, res) => {
   } catch (error) {
     console.error("Błąd pobierania zamówień:", error);
     res.status(500).json({ message: "Błąd podczas pobierania zamówień." });
+  }
+};
+
+exports.updateOrderStatus = async (req, res) => {
+  const { orderId, status } = req.body;
+
+  try {
+    const order = await Order.findByPk(orderId);
+    if (!order)
+      return res.status(404).json({ message: "Zamówienie nie znalezione." });
+
+    await Order.update({ status }, { where: { id: orderId } });
+
+    client.publish(
+      `orders/user/${order.userId}`,
+      JSON.stringify({ orderId, status }),
+      (err) => {
+        console.error("Błąd publikowania MQTT:", err);
+      }
+    );
+
+    res.json({ message: "Status zamówienia zaktualizowany." });
+  } catch (error) {
+    res.status(500).json({ error: "Błąd podczas aktualizacji zamówienia." });
   }
 };
