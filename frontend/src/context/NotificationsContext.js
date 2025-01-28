@@ -18,7 +18,21 @@ export const NotificationsProvider = ({ children, userId }) => {
       connectTimeout: 4000,
     });
 
-    client.on("connect", () => client.subscribe(`orders/user/${userId}`));
+    client.on("connect", () => {
+      const orderTopic = `orders/user/${userId}`;
+      const inventoryTopic = "inventory/updates";
+
+      client.subscribe(orderTopic, (err) => {
+        if (err) console.error("Błąd subskrypcji zamówień:", err);
+        else console.log(`Subskrybowano: ${orderTopic}`);
+      });
+
+      client.subscribe(inventoryTopic, (err) => {
+        if (err) console.error("Błąd subskrypcji magazynu:", err);
+        else console.log(`Subskrybowano: ${inventoryTopic}`);
+      });
+    });
+
     client.on("message", (topic, message) => {
       try {
         const payload = JSON.parse(message.toString());
@@ -32,7 +46,13 @@ export const NotificationsProvider = ({ children, userId }) => {
       }
     });
 
-    return () => client.end();
+    client.on("error", (error) => {
+      console.error("Błąd MQTT:", error);
+    });
+
+    return () => {
+      client.end();
+    };
   }, [userId]);
 
   return (
