@@ -20,21 +20,25 @@ exports.createOrder = async (req, res) => {
       status: "pending",
     });
 
-    const orderItems = medications.map((med) => ({
-      orderId: newOrder.id,
-      medicationId: med.medicationId,
-      quantity: med.quantity,
-    }));
+    for (let med of medications) {
+      const medication = await Medication.findByPk(med.medicationId);
+      if (medication && medication.stock_quantity >= med.quantity) {
+        const newQuantity = medication.stock_quantity - med.quantity;
+        await medication.update({ stock_quantity: newQuantity });
 
-    await OrderItem.bulkCreate(orderItems);
-
-    client.publish(
-      `orders/user/${userId}`,
-      JSON.stringify({ orderId: newOrder.id, status: "pending" }),
-      (err) => {
-        console.error("Błąd publikowania MQTT:", err);
+        client.publish(
+          `inventory/updates`,
+          JSON.stringify({
+            medicationId: med.medicationId,
+            newQuantity,
+          })
+        );
+      } else {
+        return res
+          .status(400)
+          .json({ message: `Brak wystarczającej ilości ${medication.name}` });
       }
-    );
+    }
 
     res
       .status(201)
