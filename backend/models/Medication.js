@@ -24,6 +24,7 @@ const Medication = sequelize.define("Medication", {
   },
   imageUrl: {
     type: DataTypes.STRING,
+    allowNull: true,
   },
 });
 
