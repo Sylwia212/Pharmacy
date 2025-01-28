@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getCart, removeFromCart } from "../api";
+import { useNavigate } from "react-router-dom";
 
 function CartPage({ userId }) {
   const [cartItems, setCartItems] = useState([]);
-  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchCart() {
@@ -11,7 +12,7 @@ function CartPage({ userId }) {
         const items = await getCart(userId);
         setCartItems(items);
       } catch (error) {
-        setErrorMsg("Błąd podczas pobierania koszyka.");
+        console.error("Błąd pobierania koszyka:", error);
       }
     }
     fetchCart();
@@ -22,11 +23,19 @@ function CartPage({ userId }) {
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
+  const handlePlaceOrder = () => {
+    if (cartItems.length === 0) {
+      return;
+    }
+    navigate("/order", { state: { cartItems } });
+  };
+
   return (
     <div>
       <h2>Koszyk</h2>
-      {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
-      {cartItems.length > 0 ? (
+      {cartItems.length === 0 ? (
+        <p>Brak produktów w koszyku.</p>
+      ) : (
         <ul>
           {cartItems.map((item) => (
             <li key={item.id}>
@@ -35,8 +44,9 @@ function CartPage({ userId }) {
             </li>
           ))}
         </ul>
-      ) : (
-        <p>Koszyk jest pusty.</p>
+      )}
+      {cartItems.length > 0 && (
+        <button onClick={handlePlaceOrder}>Złóż zamówienie</button>
       )}
     </div>
   );

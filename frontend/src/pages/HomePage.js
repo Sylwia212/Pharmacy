@@ -26,16 +26,16 @@ function HomePage({ userId, token }) {
   };
 
   const handleAddToCart = async (medicationId) => {
+    if (!token || !userId) {
+      alert("Musisz być zalogowany, aby dodać produkt do koszyka.");
+      return;
+    }
+
     try {
-      if (!token) {
-        alert("Musisz być zalogowany, aby dodać produkt do koszyka.");
-        return;
-      }
-      await addToCart(userId, medicationId, 1);
+      const response = await addToCart(userId, medicationId, 1);
       alert("Dodano do koszyka!");
     } catch (error) {
-      console.error("Błąd podczas dodawania do koszyka:", error);
-      alert("Wystąpił błąd podczas dodawania do koszyka.");
+      alert("Wystąpił problem podczas dodawania do koszyka.");
     }
   };
 

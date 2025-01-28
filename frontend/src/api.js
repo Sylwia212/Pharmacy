@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 const API_URL = "http://localhost:3000";
 
 export async function registerUser(email, password) {
@@ -121,11 +122,20 @@ export async function deleteMedication(id) {
 }
 
 export async function addToCart(userId, medicationId, quantity) {
+  const token = Cookies.get("jwtToken"); 
+  console.log("Token używany w addToCart:", token);
+
+  if (!token) {
+    alert("Brak tokena autoryzacji! Upewnij się, że jesteś zalogowany.");
+    return;
+  }
+
   try {
-    const response = await fetch(`${API_URL}/api/cart`, {
+    const response = await fetch("http://localhost:3000/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
       body: JSON.stringify({
@@ -180,3 +190,15 @@ export function getCookie(name) {
   }
   return null;
 }
+
+export async function clearCart(userId) {
+  const response = await fetch(
+    `http://localhost:3000/api/cart/clear/${userId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+  return await response.json();
+}
+
