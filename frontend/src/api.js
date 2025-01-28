@@ -285,3 +285,29 @@ export async function updateMedication(id, formData) {
   }
   return await response.json();
 }
+
+export async function updateOrderStatus(orderId, status) {
+  const token = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("jwtToken="))
+    ?.split("=")[1];
+
+  if (!token) {
+    throw new Error("Brak tokena autoryzacji. Zaloguj się ponownie.");
+  }
+
+  const response = await fetch("http://localhost:3000/api/orders/status", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ orderId, status }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Błąd podczas aktualizacji statusu zamówienia.");
+  }
+
+  return await response.json();
+}
