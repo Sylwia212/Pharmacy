@@ -1,6 +1,8 @@
 const Medication = require("../models/Medication");
 const path = require("path");
 const multer = require("multer");
+const { notifyInventoryChange } = require("../websockets/inventoryWebSocket");
+const { Op } = require("sequelize");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -73,7 +75,7 @@ exports.updateMedication = async (req, res) => {
     };
 
     if (fileName) {
-      updates.imageUrl = `/uploads/${fileName}`; 
+      updates.imageUrl = `/uploads/${fileName}`;
     }
 
     const medication = await Medication.findByPk(id);
@@ -105,5 +107,47 @@ exports.deleteMedication = async (req, res) => {
   } catch (error) {
     console.error("Błąd podczas usuwania leku:", error);
     res.status(500).json({ error: "Błąd podczas usuwania leku" });
+  }
+};
+
+exports.updateStock = async (req, res) => {
+  const { medicationId, newQuantity } = req.body;
+
+  try {
+    const medication = await Medication.findByPk(medicationId);
+    if (!medication) {
+      return res.status(404).json({ message: "Lek nie znaleziony" });
+    }
+
+    await medication.update({ stock_quantity: newQuantity });
+
+    notifyInventoryChange(medicationId, newQuantity);
+
+    res.json({ message: "Stan magazynowy zaktualizowany" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Błąd serwera podczas aktualizacji stanu" });
+  }
+};
+
+exports.getLowStockMedications = async (req, res) => {
+  try {
+    const lowStockMedications = await Medication.findAll({
+      attributes: ["id", "name", "stock_quantity"],
+      where: {
+        stock_quantity: { [Op.lt]: 20 },
+      },
+    });
+
+    if (!lowStockMedications || lowStockMedications.length === 0) {
+      return res.json([]);
+    }
+
+    console.log(JSON.stringify(lowStockMedications, null, 2));
+
+    res.json(lowStockMedications);
+  } catch (error) {
+    res.status(500).json({ error: "Błąd serwera", details: error.message });
   }
 };

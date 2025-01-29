@@ -6,6 +6,8 @@ router.post("/", medicationController.uploadImage, medicationController.addMedic
 
 router.get("/", medicationController.getAllMedications);
 
+router.get("/low-stock", medicationController.getLowStockMedications); 
+
 router.get("/:id", medicationController.getMedicationById);
 
 router.put("/:id", medicationController.uploadImage, medicationController.updateMedication);

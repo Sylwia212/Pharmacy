@@ -2,22 +2,29 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const mqtt = require("mqtt");
-const client = mqtt.connect("mqtt://broker.hivemq.com");
+const http = require("http");
+const WebSocket = require("ws");
 
 const sequelize = require("./config/database");
 const Medication = require("./models/Medication");
 const User = require("./models/User");
 
+const { setupInventoryWebSocket } = require("./websockets/inventoryWebSocket");
+const mqttClient = require("./mqtt/inventoryMqtt");
+
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
-const authenticateToken = require("./middlewares/authenticateToken");
 const medicationRoutes = require("./routes/medication.routes");
 const cartRoutes = require("./routes/cart.routes");
 const orderRoutes = require("./routes/order.routes");
+const authenticateToken = require("./middlewares/authenticateToken");
 
 const app = express();
 app.use(express.json());
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+setupInventoryWebSocket(wss);
 
 app.use(
   cors({
@@ -29,13 +36,9 @@ app.use(
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
-
 app.use("/api/users", userRoutes);
-
 app.use("/api/medications", medicationRoutes);
-
 app.use("/uploads", express.static("uploads"));
-
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 
@@ -49,19 +52,24 @@ app.get("/", (req, res) => {
   res.send("Serwer działa poprawnie!");
 });
 
+const mqtt = require("mqtt");
+const client = mqtt.connect("mqtt://broker.hivemq.com");
+
 client.on("connect", () => {
   console.log("Połączono z brokerem MQTT");
   client.subscribe("orders/status", (err) => {
     if (err) {
-      console.error("Błąd subskrypcji:", err);
+      console.error("Błąd subskrypcji MQTT:", err);
     } else {
-      console.log("Subskrypcja na temat: orders/status");
+      console.log("Subskrybowano temat: orders/status");
     }
   });
 });
 
 client.on("message", (topic, message) => {
-  console.log(`Otrzymano wiadomość na temat "${topic}": ${message.toString()}`);
+  console.log(
+    `Otrzymano wiadomość MQTT na temat "${topic}": ${message.toString()}`
+  );
 });
 
 sequelize
@@ -70,6 +78,6 @@ sequelize
   .catch((err) => console.error("Błąd synchronizacji bazy danych:", err));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Serwer działa na http://localhost:${PORT}`);
 });
