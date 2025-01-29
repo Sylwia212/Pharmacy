@@ -9,15 +9,7 @@ const InventoryNotifications = () => {
       <h3>Powiadomienia o niskim stanie magazynowym</h3>
       <ul>
         {notifications
-          .filter(
-            (msg, index, self) =>
-              msg.payload.newQuantity < 20 &&
-              msg.payload.name !== "Nieznany lek" &&
-              index ===
-                self.findIndex(
-                  (m) => m.payload.medicationId === msg.payload.medicationId
-                )
-          )
+          .filter((msg) => msg.payload.newQuantity < 20)
           .map((msg, index) => (
             <li
               key={index}
@@ -26,8 +18,8 @@ const InventoryNotifications = () => {
               }}
             >
               {msg.payload.newQuantity === 0
-                ? `${msg.payload.name} jest wyprzedany!`
-                : `Niski stan magazynowy dla ${msg.payload.name}! (Pozostało: ${msg.payload.newQuantity})`}
+                ? `${msg.payload.name} jest WYPRZEDANY!`
+                : `Niski stan magazynowy dla ${msg.payload.name} (Pozostało: ${msg.payload.newQuantity})`}
             </li>
           ))}
       </ul>
