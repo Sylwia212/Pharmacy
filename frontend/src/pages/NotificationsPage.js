@@ -2,12 +2,8 @@ import React from "react";
 import { useNotifications } from "../context/NotificationsContext";
 import "../styles/NotificationsPage.css";
 
-function NotificationsPage({ userId }) {
+function NotificationsPage() {
   const { notifications } = useNotifications();
-
-  if (!userId) {
-    return <p>Musisz być zalogowany, aby zobaczyć powiadomienia.</p>;
-  }
 
   return (
     <div className="notifications-page-container">
@@ -16,7 +12,14 @@ function NotificationsPage({ userId }) {
         <ul className="notifications-list">
           {notifications.map((notif, index) => (
             <li key={index} className="notification-item">
-              <strong>{notif.topic}</strong>: {JSON.stringify(notif.payload)}
+              <strong>Typ powiadomienia:</strong>{" "}
+              {notif.payload.type === "order_created"
+                ? "Nowe zamówienie"
+                : "Zmiana statusu zamówienia"}
+              <br />
+              <strong>Treść:</strong> {notif.payload.message}
+              <br />
+              <strong>Status:</strong> {notif.payload.status}
             </li>
           ))}
         </ul>

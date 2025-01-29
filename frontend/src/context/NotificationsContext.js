@@ -3,7 +3,6 @@ import mqtt from "mqtt";
 
 const NotificationsContext = createContext();
 const BROKER_URL = "wss://broker.hivemq.com:8884/mqtt";
-const WS_URL = "ws://localhost:3000"; 
 
 export const NotificationsProvider = ({ children, userId }) => {
   const [notifications, setNotifications] = useState([]);
@@ -48,18 +47,6 @@ export const NotificationsProvider = ({ children, userId }) => {
 
     fetchMedications();
 
-    const interval = setInterval(fetchMedications, 10000);
-
-    const ws = new WebSocket(WS_URL);
-    ws.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data);
-        addNotification("inventory/updates", payload);
-      } catch (error) {
-        console.error("Błąd parsowania WebSocket:", error);
-      }
-    };
-
     const client = mqtt.connect(BROKER_URL, {
       clientId: `client_${userId}_${Math.random().toString(16).substr(2, 8)}`,
       clean: true,
@@ -81,14 +68,23 @@ export const NotificationsProvider = ({ children, userId }) => {
 
         if (topic.includes(`orders/user/${userId}`)) {
 
-          addNotification(topic, {
-            orderId: payload.orderId,
-            status: payload.status || "Złożone",
-            message: `Złożono zamówienie o ID ${payload.orderId}`,
-            type: "order",
-          });
+          if (payload.type === "order_created") {
+            addNotification(topic, {
+              orderId: payload.orderId,
+              message: `Złożono nowe zamówienie o ID ${payload.orderId}`,
+              status: payload.status || "pending",
+              type: "order_created",
+            });
+          } else if (payload.type === "order_status_update") {
+            addNotification(topic, {
+              orderId: payload.orderId,
+              message: `Zaktualizowano status zamówienia ${payload.orderId} na ${payload.status}`,
+              status: payload.status,
+              type: "order_status_update",
+            });
+          }
 
-          fetchMedications(); 
+          fetchMedications();
         }
 
         if (topic.includes("inventory/updates")) {
@@ -100,8 +96,6 @@ export const NotificationsProvider = ({ children, userId }) => {
     });
 
     return () => {
-      clearInterval(interval);
-      ws.close();
       client.end();
     };
   }, [userId]);
@@ -142,12 +136,14 @@ export const NotificationsProvider = ({ children, userId }) => {
   const addNotification = (topic, payload) => {
     setNotifications((prev) => {
       const exists = prev.some(
-        (n) => JSON.stringify(n.payload) === JSON.stringify(payload)
+        (n) =>
+          n.payload.orderId === payload.orderId &&
+          n.payload.type === payload.type
       );
+
       if (exists) return prev;
 
-      const updated = [...prev, { topic, payload }];
-      return updated;
+      return [...prev, { topic, payload }];
     });
   };
 
