@@ -10,8 +10,10 @@ const Medication = require("./models/Medication");
 const User = require("./models/User");
 
 const { setupInventoryWebSocket } = require("./websockets/inventoryWebSocket");
-const mqttClient = require("./mqtt/inventoryMqtt");
 const { setupUserWebSocket } = require("./websockets/userWebSocket");
+const { setupChatWebSocket } = require("./websockets/chatWebSocket");
+
+const mqttClient = require("./mqtt/inventoryMqtt");
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -25,8 +27,10 @@ app.use(express.json());
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-setupInventoryWebSocket(wss);
-setupUserWebSocket(wss);
+
+setupInventoryWebSocket(wss); 
+setupUserWebSocket(wss); 
+setupChatWebSocket(wss);
 
 app.use(
   cors({
@@ -58,7 +62,6 @@ const mqtt = require("mqtt");
 const client = mqtt.connect("mqtt://broker.hivemq.com");
 
 client.on("connect", () => {
-  console.log("Połączono z brokerem MQTT");
   client.subscribe("orders/status", (err) => {
     if (err) {
       console.error("Błąd subskrypcji MQTT:", err);
@@ -69,9 +72,7 @@ client.on("connect", () => {
 });
 
 client.on("message", (topic, message) => {
-  console.log(
-    `Otrzymano wiadomość MQTT na temat "${topic}": ${message.toString()}`
-  );
+  console.log(`MQTT [${topic}]: ${message.toString()}`);
 });
 
 sequelize
