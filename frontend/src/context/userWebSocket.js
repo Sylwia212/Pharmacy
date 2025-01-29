@@ -1,25 +1,42 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
 const UserWebSocketContext = createContext();
 
 export const UserWebSocketProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [stockUpdates, setStockUpdates] = useState({});
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
     const connectWebSocket = () => {
+      if (socketRef.current) return;
       const ws = new WebSocket("ws://localhost:3000");
 
-      ws.onopen = () => {
-        console.log("Połączono z WebSocket użytkownika");
-      };
+      ws.onopen = () => {};
 
       ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === "notification") {
-          setNotifications((prev) => [...prev, data.message]);
+        let data;
+        try {
+          data = JSON.parse(event.data);
+        } catch (error) {
+          return;
         }
+
+        if (data.type === "notification") {
+          setNotifications((prev) => {
+            if (!prev.includes(data.message)) {
+              return [...prev, data.message];
+            }
+            return prev;
+          });
+        }
+
         if (data.type === "low_stock" || data.type === "out_of_stock") {
           setStockUpdates((prev) => ({
             ...prev,
@@ -29,14 +46,24 @@ export const UserWebSocketProvider = ({ children }) => {
       };
 
       ws.onclose = () => {
-        console.log("WebSocket użytkownika rozłączony");
+        socketRef.current = null;
         setTimeout(connectWebSocket, 3000);
       };
-      setSocket(ws);
+
+      ws.onerror = (error) => {
+        console.error("Błąd WebSocket:", error);
+      };
+
+      socketRef.current = ws;
     };
+
     connectWebSocket();
+
     return () => {
-      if (socket) socket.close();
+      if (socketRef.current) {
+        socketRef.current.close();
+        socketRef.current = null;
+      }
     };
   }, []);
 
