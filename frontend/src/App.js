@@ -13,6 +13,7 @@ import OrdersPage from "./pages/OrdersPage";
 import EditMedicationPage from "./pages/EditMedicationPage";
 import MedicationList from "./pages/MedicationsList";
 import NotificationsPage from "./pages/NotificationsPage";
+import InventoryNotifications from "./pages/InventoryNotifications";
 
 function App() {
   const [token, setToken] = useState("");
@@ -99,10 +100,16 @@ function App() {
               Powiadomienia
             </Link>
 
-            <Link to="/medications">Leki</Link>
+            <Link to="/medications" style={{ marginRight: "10px" }}>
+              Leki
+            </Link>
 
             {token && <button onClick={handleLogout}>Wyloguj</button>}
           </nav>
+          <div>
+            <h1>Panel Apteki</h1>
+            <InventoryNotifications />
+          </div>
 
           {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
 
