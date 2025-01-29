@@ -4,30 +4,44 @@ const UserWebSocketContext = createContext();
 
 export const UserWebSocketProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
+  const [stockUpdates, setStockUpdates] = useState({});
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:3000");
+    const connectWebSocket = () => {
+      const ws = new WebSocket("ws://localhost:3000");
 
-    ws.onopen = () => {
-      console.log("Połączono z WebSocket użytkownika");
+      ws.onopen = () => {
+        console.log("Połączono z WebSocket użytkownika");
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "notification") {
+          setNotifications((prev) => [...prev, data.message]);
+        }
+        if (data.type === "low_stock" || data.type === "out_of_stock") {
+          setStockUpdates((prev) => ({
+            ...prev,
+            [data.medicationId]: data.newQuantity,
+          }));
+        }
+      };
+
+      ws.onclose = () => {
+        console.log("WebSocket użytkownika rozłączony");
+        setTimeout(connectWebSocket, 3000);
+      };
+      setSocket(ws);
     };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "notification") {
-        setNotifications((prev) => [...prev, data.message]);
-      }
+    connectWebSocket();
+    return () => {
+      if (socket) socket.close();
     };
-
-    ws.onclose = () => {
-      console.log("WebSocket użytkownika rozłączony");
-    };
-
-    return () => ws.close();
   }, []);
 
   return (
-    <UserWebSocketContext.Provider value={{ notifications }}>
+    <UserWebSocketContext.Provider value={{ notifications, stockUpdates }}>
       {children}
     </UserWebSocketContext.Provider>
   );
