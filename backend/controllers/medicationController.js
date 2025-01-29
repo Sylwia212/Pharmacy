@@ -3,6 +3,7 @@ const path = require("path");
 const multer = require("multer");
 const { notifyInventoryChange } = require("../websockets/inventoryWebSocket");
 const { Op } = require("sequelize");
+const { sendUserNotification } = require("../websockets/userWebSocket");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -55,6 +56,7 @@ exports.addMedication = async (req, res) => {
       imageUrl: fileName ? `/uploads/${fileName}` : null,
     });
 
+    sendUserNotification(`Nowy lek dodany: ${newMedication.name}`);
     res.status(201).json(newMedication);
   } catch (error) {
     res.status(500).json({ error: "Błąd podczas dodawania leku" });

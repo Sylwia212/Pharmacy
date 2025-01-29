@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { NotificationsProvider } from "./context/NotificationsContext";
+import { UserWebSocketProvider } from "./context/userWebSocket";
+import UserNotifications from "./pages/UserNotifications";
 
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
@@ -74,6 +76,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    <UserWebSocketProvider>
       <NotificationsProvider userId={userId}>
         <div style={{ margin: "20px" }}>
           <nav>
@@ -108,6 +111,7 @@ function App() {
           </nav>
           <div>
             <h1>Panel Apteki</h1>
+            <UserNotifications />
             <InventoryNotifications />
           </div>
 
@@ -171,6 +175,7 @@ function App() {
           </Routes>
         </div>
       </NotificationsProvider>
+      </UserWebSocketProvider>
     </BrowserRouter>
   );
 }

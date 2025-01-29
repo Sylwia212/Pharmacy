@@ -11,6 +11,7 @@ const User = require("./models/User");
 
 const { setupInventoryWebSocket } = require("./websockets/inventoryWebSocket");
 const mqttClient = require("./mqtt/inventoryMqtt");
+const { setupUserWebSocket } = require("./websockets/userWebSocket");
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -25,6 +26,7 @@ app.use(express.json());
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 setupInventoryWebSocket(wss);
+setupUserWebSocket(wss);
 
 app.use(
   cors({
