@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/CartPage.css"
+import "../styles/ChatPage.css"
 
 const ChatPage = () => {
   const [ws, setWs] = useState(null);

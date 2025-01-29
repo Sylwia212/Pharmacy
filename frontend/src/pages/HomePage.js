@@ -74,18 +74,14 @@ function HomePage({ userId, token }) {
 
             return (
               <li key={med.id} className="medication-item">
-                <strong>{med.name}</strong> - {med.description}
-                <br />
-                Cena: {med.price} PLN | Dostępność: {availableStock} szt.
-                <br />
-                {med.imageUrl && (
-                  <img
-                    src={`http://localhost:3000${med.imageUrl}`}
-                    alt={med.name}
-                    className="medication-img"
-                  />
-                )}
-                <br />
+                <strong className="medication-name">{med.name}</strong>
+                <img
+                  src={`http://localhost:3000${med.imageUrl}`}
+                  alt={med.name}
+                  className="medication-img"
+                />
+                <p className="medication-description">{med.description}</p>
+                <p className="medication-price">Cena: {med.price} PLN</p>
                 <button
                   onClick={() => handleAddToCart(med.id)}
                   className="add-to-cart-btn"
