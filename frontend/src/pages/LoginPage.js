@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { loginUser } from "../api";
 import { useNavigate } from "react-router-dom";
+import "../styles/Login.css";
 
 function LoginPage({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
@@ -29,23 +30,26 @@ function LoginPage({ onLoginSuccess }) {
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h2>Logowanie</h2>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} className="login-form">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <input
           type="password"
           placeholder="Hasło"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <button type="submit">Zaloguj</button>
       </form>
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 }

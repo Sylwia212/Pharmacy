@@ -56,35 +56,45 @@ function CartPage({ userId }) {
   };
 
   return (
-    <div>
-      <h2>🛒 Koszyk</h2>
+    <div className="cart-container">
+      <h2>Koszyk</h2>
       {cartItems.length > 0 ? (
-        <ul>
+        <ul className="cart-items">
           {cartItems.map((item) => (
-            <li key={item.id}>
+            <li key={item.id} className="cart-item">
               {item.Medication.name} - {item.quantity} szt.
-              <button onClick={() => handleRemove(item.id)}>❌ Usuń</button>
+              <button
+                onClick={() => handleRemove(item.id)}
+                className="remove-btn"
+              >
+                Usuń
+              </button>
             </li>
           ))}
         </ul>
       ) : (
-        <p>🛍 Koszyk jest pusty.</p>
+        <p>Koszyk jest pusty.</p>
       )}
 
       {cartItems.length > 0 && !showForm && (
-        <button onClick={handlePlaceOrder}>📦 Złóż zamówienie</button>
+        <button onClick={handlePlaceOrder} className="order-btn">
+          Złóż zamówienie
+        </button>
       )}
 
       {showForm && (
-        <div>
-          <h3>📍 Podaj adres wysyłki</h3>
+        <div className="address-form">
+          <h3> Podaj adres wysyłki</h3>
           <input
             type="text"
             placeholder="Wpisz adres"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
+            className="address-input"
           />
-          <button onClick={handleConfirmOrder}>✅ Potwierdź zamówienie</button>
+          <button onClick={handleConfirmOrder} className="confirm-btn">
+            Potwierdź zamówienie
+          </button>
         </div>
       )}
     </div>

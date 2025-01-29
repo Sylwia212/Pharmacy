@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api";
+import "../styles/Registry.css";
 
 function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -30,10 +31,10 @@ function RegisterPage() {
   };
 
   return (
-    <div style={{ margin: "20px" }}>
+    <div className="register-container">
       <h2>Rejestracja</h2>
-      <form onSubmit={handleRegister}>
-        <div>
+      <form onSubmit={handleRegister} className="register-form">
+        <div className="form-group">
           <label>Email: </label>
           <input
             type="email"
@@ -42,7 +43,7 @@ function RegisterPage() {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Hasło: </label>
           <input
             type="password"
@@ -53,7 +54,7 @@ function RegisterPage() {
         </div>
         <button type="submit">Zarejestruj</button>
       </form>
-      {responseMsg && <p>{responseMsg}</p>}
+      {responseMsg && <p className="response-message">{responseMsg}</p>}
     </div>
   );
 }

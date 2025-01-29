@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getUserOrders, updateOrderStatus } from "../api";
+import "../styles/OrdersPage.css";
 
 function OrdersPage({ userId }) {
   const [orders, setOrders] = useState([]);
@@ -30,18 +31,19 @@ function OrdersPage({ userId }) {
   };
 
   return (
-    <div>
+    <div className="orders-container">
       <h2>Moje Zamówienia</h2>
       {orders.length === 0 ? (
         <p>Brak zamówień</p>
       ) : (
-        <ul>
+        <ul className="orders-list">
           {orders.map((order) => (
-            <li key={order.id}>
+            <li key={order.id} className="order-item">
               Zamówienie #{order.id} - {order.address} - Status: {order.status}
               <select
                 value={order.status}
                 onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                className="status-select"
               >
                 <option value="pending">Oczekujące</option>
                 <option value="shipped">Wysłane</option>

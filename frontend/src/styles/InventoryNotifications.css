@@ -1,0 +1,29 @@
+.notifications-container {
+  max-width: 600px;
+  margin: 20px 2em;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+.notification-item {
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.low-stock {
+  background-color: #ffcc00;
+  color: #000;
+}
+
+.out-of-stock {
+  background-color: #ff6347;
+  color: #fff;
+}

@@ -1,11 +1,12 @@
 import React from "react";
 import { useNotifications } from "../context/NotificationsContext";
+import "../styles/InventoryNotifications.css";
 
 const InventoryNotifications = () => {
   const { notifications } = useNotifications();
 
   return (
-    <div>
+    <div className="notifications-container">
       <h3>Powiadomienia o niskim stanie magazynowym</h3>
       <ul>
         {notifications
@@ -13,9 +14,9 @@ const InventoryNotifications = () => {
           .map((msg, index) => (
             <li
               key={index}
-              style={{
-                color: msg.payload.newQuantity === 0 ? "red" : "orange",
-              }}
+              className={`notification-item ${
+                msg.payload.newQuantity === 0 ? "out-of-stock" : "low-stock"
+              }`}
             >
               {msg.payload.newQuantity === 0
                 ? `${msg.payload.name} jest WYPRZEDANY!`

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getUserById, updateUser } from "../api";
+import "../styles/UserEditPage.css";
 
 function UserEditPage({ token }) {
   const { id } = useParams();
@@ -56,10 +57,14 @@ function UserEditPage({ token }) {
   }
 
   return (
-    <div>
+    <div className="container1">
       <h2>Zmiana hasła dla użytkownika (ID: {id})</h2>
       {responseMsg && (
-        <p style={{ color: responseMsg.includes("Błąd") ? "red" : "green" }}>
+        <p
+          style={{
+            color: responseMsg.includes("Błąd") ? "red" : "green",
+          }}
+        >
           {responseMsg}
         </p>
       )}

@@ -4,9 +4,10 @@ import Cookies from "js-cookie";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import { UserWebSocketProvider } from "./context/userWebSocket";
 import { ChatWebSocketProvider } from "./context/ChatWebSocket";
+import "./styles/App.css";
+
 import UserNotifications from "./pages/UserNotifications";
 import ChatPage from "./pages/ChatPage";
-
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
@@ -89,54 +90,30 @@ function App() {
       <ChatWebSocketProvider>
         <UserWebSocketProvider>
           <NotificationsProvider userId={userId}>
-            <div style={{ margin: "20px" }}>
-              <nav>
-                <Link to="/" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Strona główna{" "}
-                </Link>
-                <Link to="/rejestracja" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Rejestracja{" "}
-                </Link>
-                <Link to="/logowanie" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Logowanie{" "}
-                </Link>
-                <Link to="/users" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Użytkownicy{" "}
-                </Link>
-                <Link to="/koszyk" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Koszyk{" "}
-                </Link>
-                <Link to="/zamowienia" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Zamówienia{" "}
-                </Link>
-                <Link to="/powiadomienia" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Powiadomienia{" "}
-                </Link>
-                <Link to="/medications" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Leki{" "}
-                </Link>
-                <Link to="/chat" style={{ marginRight: "10px" }}>
-                  {" "}
-                  Chat{" "}
-                </Link>
+            <div className="container">
+              <nav className="navbar">
+                <Link to="/">Strona główna</Link>
+                <Link to="/rejestracja">Rejestracja</Link>
+                <Link to="/logowanie">Logowanie</Link>
+                <Link to="/users">Użytkownicy</Link>
+                <Link to="/koszyk">Koszyk</Link>
+                <Link to="/zamowienia">Zamówienia</Link>
+                <Link to="/powiadomienia">Powiadomienia</Link>
+                <Link to="/medications">Leki</Link>
+                <Link to="/chat">Chat</Link>
                 {token && <button onClick={handleLogout}>Wyloguj</button>}
               </nav>
 
-              <div>
+              <div className="header">
                 <h1>Panel Apteki</h1>
+              </div>
+
+              <div>
                 <UserNotifications />
                 <InventoryNotifications />
               </div>
 
-              {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+              {errorMsg && <p className="error-message">{errorMsg}</p>}
 
               <Routes>
                 <Route
@@ -168,7 +145,9 @@ function App() {
                     userId !== null ? (
                       <CartPage userId={userId} />
                     ) : (
-                      <p> Musisz być zalogowany, aby zobaczyć swój koszyk! </p>
+                      <p className="error-message">
+                        Musisz być zalogowany, aby zobaczyć swój koszyk!
+                      </p>
                     )
                   }
                 />

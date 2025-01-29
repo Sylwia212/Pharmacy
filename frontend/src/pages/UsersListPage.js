@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllUsers, deleteUser } from "../api";
 import { Link } from "react-router-dom";
+import "../styles/UsersList.css";
 
 function UsersListPage({ token }) {
   const [users, setUsers] = useState([]);
@@ -67,22 +68,23 @@ function UsersListPage({ token }) {
   if (loading) return <p>Ładowanie...</p>;
 
   return (
-    <div>
+    <div className="users-list-container">
       <h2>Lista użytkowników</h2>
-      {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
-      <ul>
+      {errorMsg && <p className="error-message">{errorMsg}</p>}
+      <ul className="users-list">
         {users.map((u) => (
-          <li key={u.id}>
-            {u.email} ({u.role})
-            <Link to={`/users/edit/${u.id}`} style={{ marginLeft: "10px" }}>
-              Edytuj
-            </Link>
-            <button
-              onClick={() => handleDelete(u.id)}
-              style={{ marginLeft: "10px" }}
-            >
-              Usuń
-            </button>
+          <li key={u.id} className="user-item">
+            <div className="user-details">
+              {u.email} ({u.role})
+            </div>
+            <div className="buttons-container">
+              <Link to={`/users/edit/${u.id}`} className="edit-link">
+                Edytuj
+              </Link>
+              <button onClick={() => handleDelete(u.id)} className="delete-btn">
+                Usuń
+              </button>
+            </div>
           </li>
         ))}
       </ul>

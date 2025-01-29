@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getMedications, addMedication, deleteMedication } from "../api";
 import { useNavigate } from "react-router-dom";
+import "../styles/MedicationsList.css";
 
 function MedicationsListPage() {
   const [medications, setMedications] = useState([]);
@@ -70,14 +71,14 @@ function MedicationsListPage() {
   };
 
   return (
-    <div>
-      <h2>Lista Leków</h2>
+    <div className="medications-container">
+      <h2 className="medications-header">Lista Leków</h2>
 
-      <div style={{ marginBottom: "20px" }}>
-        <h3>Dodaj nowy lek</h3>
-        {message && <p>{message}</p>}
-        <form onSubmit={handleSubmit}>
-          <div>
+      <div className="form-container">
+        <h3 className="form-header">Dodaj nowy lek</h3>
+        {message && <p className="form-message">{message}</p>}
+        <form onSubmit={handleSubmit} className="medication-form">
+          <div className="form-group">
             <label>Nazwa:</label>
             <input
               type="text"
@@ -87,7 +88,7 @@ function MedicationsListPage() {
               required
             />
           </div>
-          <div>
+          <div className="form-group">
             <label>Opis:</label>
             <input
               type="text"
@@ -97,7 +98,7 @@ function MedicationsListPage() {
               required
             />
           </div>
-          <div>
+          <div className="form-group">
             <label>Cena:</label>
             <input
               type="number"
@@ -107,7 +108,7 @@ function MedicationsListPage() {
               required
             />
           </div>
-          <div>
+          <div className="form-group">
             <label>Ilość:</label>
             <input
               type="number"
@@ -117,32 +118,42 @@ function MedicationsListPage() {
               required
             />
           </div>
-          <div>
+          <div className="form-group">
             <label>Zdjęcie:</label>
             <input type="file" onChange={handleImageChange} />
           </div>
-          <button type="submit">Dodaj lek</button>
+          <button type="submit" className="submit-btn">
+            Dodaj lek
+          </button>
         </form>
       </div>
 
-      <ul>
+      <ul className="medications-list">
         {medications.map((med) => (
-          <li key={med.id}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <li key={med.id} className="medication-item">
+            <div className="medication-info">
               {med.imageUrl && (
                 <img
                   src={`http://localhost:3000${med.imageUrl}`}
                   alt={med.name}
-                  style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                  className="medication-img"
                 />
               )}
               <span>
                 {med.name} - {med.price} PLN
               </span>
-              <button onClick={() => navigate(`/medications/edit/${med.id}`)}>
-                ✏️ Edytuj
+              <button
+                onClick={() => navigate(`/medications/edit/${med.id}`)}
+                className="edit-btn"
+              >
+                Edytuj
               </button>
-              <button onClick={() => handleDelete(med.id)}>❌ Usuń</button>
+              <button
+                onClick={() => handleDelete(med.id)}
+                className="delete-btn"
+              >
+                Usuń
+              </button>
             </div>
           </li>
         ))}

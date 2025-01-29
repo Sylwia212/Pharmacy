@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "../styles/CartPage.css"
 
 const ChatPage = () => {
   const [ws, setWs] = useState(null);
@@ -74,16 +75,9 @@ const ChatPage = () => {
   };
 
   return (
-    <div>
+    <div className="chat-container">
       <h2>Chat użytkowników</h2>
-      <div
-        style={{
-          border: "1px solid black",
-          padding: "10px",
-          height: "300px",
-          overflowY: "scroll",
-        }}
-      >
+      <div className="chat-window">
         {messages.map((msg, index) => (
           <p key={msg.timestamp || index}>
             <strong>{msg.senderId}:</strong> {msg.content}
@@ -95,8 +89,11 @@ const ChatPage = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Wpisz wiadomość..."
+        className="chat-input"
       />
-      <button onClick={sendMessage}>Wyślij</button>
+      <button onClick={sendMessage} className="send-btn">
+        Wyślij
+      </button>
     </div>
   );
 };

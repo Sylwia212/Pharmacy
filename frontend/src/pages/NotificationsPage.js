@@ -1,5 +1,6 @@
 import React from "react";
 import { useNotifications } from "../context/NotificationsContext";
+import "../styles/NotificationsPage.css";
 
 function NotificationsPage({ userId }) {
   const { notifications } = useNotifications();
@@ -9,12 +10,12 @@ function NotificationsPage({ userId }) {
   }
 
   return (
-    <div>
+    <div className="notifications-page-container">
       <h2>Powiadomienia</h2>
       {notifications.length > 0 ? (
-        <ul>
+        <ul className="notifications-list">
           {notifications.map((notif, index) => (
-            <li key={index}>
+            <li key={index} className="notification-item">
               <strong>{notif.topic}</strong>: {JSON.stringify(notif.payload)}
             </li>
           ))}

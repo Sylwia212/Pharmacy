@@ -1,0 +1,123 @@
+.medications-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px solid #ddd8d9;
+  border-radius: 10px;
+}
+
+.medications-header {
+  text-align: center;
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.form-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.form-header {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.form-message {
+  color: green;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.medication-form .form-group {
+  margin-bottom: 15px;
+}
+
+.medication-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.medication-form input[type="text"],
+.medication-form input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.medication-form input[type="file"] {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #4cae4c;
+}
+
+.medications-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.medication-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.medication-info {
+  display: flex;
+  align-items: center;
+}
+
+.medication-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.edit-btn {
+  color: #337ab7;
+  margin-right: 5px;
+}
+
+.delete-btn {
+  color: #d9534f;
+}
+
+.edit-btn:hover {
+  text-decoration: underline;
+}
+
+.delete-btn:hover {
+  text-decoration: underline;
+}

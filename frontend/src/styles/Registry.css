@@ -1,0 +1,53 @@
+.register-container {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.register-form .form-group {
+  margin-bottom: 16px;
+}
+
+.register-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.register-form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button[type="submit"] {
+  background-color: #2390bb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #0a719a;
+}
+
+.response-message {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 4px;
+  color: white;
+  background-color: #0a719a;
+}
+
+.response-message:has(:contains("Błąd")) {
+  background-color: #d9534f;
+}

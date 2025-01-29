@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { getMedicationById, updateMedication } from "../api";
 import { useParams, useNavigate } from "react-router-dom";
+import "../styles/EditMedication.css";
 
 function EditMedicationPage() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -22,7 +23,7 @@ function EditMedicationPage() {
           description: medication.description,
           price: medication.price,
           stock_quantity: medication.stock_quantity,
-          image: null, 
+          image: null,
         });
       } catch (error) {
         console.error("Błąd pobierania leku:", error);
@@ -63,9 +64,9 @@ function EditMedicationPage() {
   };
 
   return (
-    <div>
+    <div className="edit-medication-container">
       <h2>Edytuj lek</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="edit-medication-form">
         <label>Nazwa:</label>
         <input
           type="text"
@@ -105,7 +106,9 @@ function EditMedicationPage() {
         <label>Zdjęcie:</label>
         <input type="file" name="image" onChange={handleImageChange} />
 
-        <button type="submit">Zapisz zmiany</button>
+        <button type="submit" className="submit-btn">
+          Zapisz zmiany
+        </button>
       </form>
     </div>
   );

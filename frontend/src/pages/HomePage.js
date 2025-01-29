@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getMedications, addToCart } from "../api";
 import { useUserWebSocket } from "../context/userWebSocket";
+import "../styles/HomePage.css";
 
 function HomePage({ userId, token }) {
   const [medications, setMedications] = useState([]);
@@ -26,24 +27,24 @@ function HomePage({ userId, token }) {
       alert("Musisz być zalogowany, aby dodać produkt do koszyka.");
       return;
     }
-  
+
     const numericMedicationId = Number(medicationId);
     const medication = medications.find((m) => m.id === numericMedicationId);
 
     const availableStock =
       stockUpdates?.[numericMedicationId] ?? medication.stock_quantity;
     const cartQuantity = cart[numericMedicationId] || 0;
-  
+
     if (availableStock === 0) {
       alert("Produkt jest wyprzedany!");
       return;
     }
-  
+
     if (cartQuantity >= availableStock) {
       alert("Masz już maksymalną dostępną ilość tego leku w koszyku!");
       return;
     }
-  
+
     try {
       await addToCart(userId, numericMedicationId, 1);
       alert("Dodano do koszyka!");
@@ -55,14 +56,14 @@ function HomePage({ userId, token }) {
       alert("Wystąpił problem podczas dodawania do koszyka.");
     }
   };
-  
+
   return (
-    <div style={{ margin: "20px" }}>
+    <div className="page-container">
       <h2>Lista leków</h2>
 
-      {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+      {errorMsg && <p className="error-message">{errorMsg}</p>}
 
-      <ul>
+      <ul className="medications-list">
         {medications.length > 0 ? (
           medications.map((med) => {
             const availableStock = stockUpdates?.[med.id] ?? med.stock_quantity;
@@ -72,7 +73,7 @@ function HomePage({ userId, token }) {
             const isMaxInCart = cartQuantity >= availableStock;
 
             return (
-              <li key={med.id}>
+              <li key={med.id} className="medication-item">
                 <strong>{med.name}</strong> - {med.description}
                 <br />
                 Cena: {med.price} PLN | Dostępność: {availableStock} szt.
@@ -81,12 +82,13 @@ function HomePage({ userId, token }) {
                   <img
                     src={`http://localhost:3000${med.imageUrl}`}
                     alt={med.name}
-                    width="150"
+                    className="medication-img"
                   />
                 )}
                 <br />
                 <button
                   onClick={() => handleAddToCart(med.id)}
+                  className="add-to-cart-btn"
                   disabled={isOutOfStock || isMaxInCart}
                 >
                   {isOutOfStock

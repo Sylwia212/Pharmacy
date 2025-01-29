@@ -1,0 +1,54 @@
+.page-container {
+    padding: 20px;
+  }
+  
+  .error-message {
+    color: red;
+  }
+  
+  .medications-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 4fr));
+    gap: 20px;
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .medication-item {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .medication-img {
+    margin-top: 10px;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  
+  .add-to-cart-btn {
+    background-color: #2390bb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-to-cart-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .add-to-cart-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
