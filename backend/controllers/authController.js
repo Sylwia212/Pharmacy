@@ -57,7 +57,8 @@ exports.login = async (req, res) => {
 
     res.cookie("jwtToken", token, {
       httpOnly: false,
-      secure: false,
+      // secure: false,
+      secure: true,
       sameSite: "Lax",
       path: "/",
       maxAge: 3600000,
@@ -79,6 +80,6 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie("authToken");
+  res.clearCookie("jwtToken");
   res.status(200).json({ message: "Wylogowano pomyślnie" });
 };

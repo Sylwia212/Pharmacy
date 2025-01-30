@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const Order = require("../models/Order");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -59,6 +60,8 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   try {
+    await Order.destroy({ where: { userId: id } });
+
     const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({ message: "Użytkownik nie znaleziony" });
@@ -67,6 +70,7 @@ exports.deleteUser = async (req, res) => {
     await user.destroy();
     return res.status(200).json({ message: "Użytkownik usunięty" });
   } catch (error) {
+    console.error("Błąd podczas usuwania użytkownika:", error);
     return res
       .status(500)
       .json({ message: "Błąd serwera podczas usuwania użytkownika" });
