@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getMedications, addToCart } from "../api";
+import { getMedications, addToCart, searchMedicationByName } from "../api";
 import { useUserWebSocket } from "../context/userWebSocket";
 import "../styles/HomePage.css";
 
@@ -7,6 +7,8 @@ function HomePage({ userId, token }) {
   const [medications, setMedications] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [cart, setCart] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [smedications, setSmedications] = useState([]);
   const { stockUpdates } = useUserWebSocket();
 
   useEffect(() => {
@@ -21,6 +23,16 @@ function HomePage({ userId, token }) {
 
     fetchMedications();
   }, []);
+
+  const handleSearch = async () => {
+    try {
+      const results = await searchMedicationByName(searchTerm);
+      setSmedications(results);
+      setErrorMsg("");
+    } catch (error) {
+      setErrorMsg("Błąd podczas wyszukiwania leków.");
+    }
+  };
 
   const handleAddToCart = async (medicationId) => {
     if (!token || !userId) {
@@ -60,6 +72,26 @@ function HomePage({ userId, token }) {
   return (
     <div className="page-container">
       <h2>Lista leków</h2>
+      <div>
+        <h2>Wyszukiwanie leku</h2>
+        <input
+          type="text"
+          placeholder="Podaj nazwę leku"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button onClick={handleSearch}>Szukaj</button>
+
+        {errorMsg && <p className="error-message">{errorMsg}</p>}
+
+        <ul>
+          {smedications.map((med) => (
+            <li key={med.id}>
+              {med.name} - {med.price} PLN
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {errorMsg && <p className="error-message">{errorMsg}</p>}
 

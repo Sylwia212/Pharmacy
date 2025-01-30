@@ -311,3 +311,23 @@ export async function updateOrderStatus(orderId, status) {
 
   return await response.json();
 }
+
+export async function searchMedicationByName(name) {
+  const response = await fetch(
+    `http://localhost:3000/api/medications/search?name=${encodeURIComponent(
+      name
+    )}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Błąd podczas wyszukiwania leku.");
+  }
+
+  return await response.json();
+}
