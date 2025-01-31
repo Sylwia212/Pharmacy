@@ -2,12 +2,13 @@ const mqtt = require("mqtt");
 const client = mqtt.connect("mqtt://broker.hivemq.com");
 
 client.on("connect", () => {
+  const userId = process.env.USER_ID;
   console.log("Połączono z MQTT");
-  client.subscribe("orders/#", (err) => {
+  client.subscribe(`orders/user/${userId}`, (err) => {
     if (err) {
       console.error("Błąd subskrypcji:", err);
     } else {
-      console.log("Subskrybujesz temat: orders/#");
+      console.log("Subskrybujesz temat: orders/user/{userId}");
     }
   });
 });

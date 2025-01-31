@@ -18,11 +18,10 @@ client.on("connect", () => {
 
 client.on("message", (topic, message) => {
   try {
+    console.log(`Otrzymano wiadomość z tematu ${topic}:`, message.toString());
     const data = JSON.parse(message.toString());
-
-    if (data.newQuantity < 20) {
-      notifyInventoryChange(data.medicationId, data.newQuantity);
-    }
+    
+    notifyInventoryChange(data.medicationId, data.newQuantity);
   } catch (error) {
     console.error("Błąd parsowania wiadomości MQTT:", error);
   }

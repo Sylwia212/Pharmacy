@@ -3,6 +3,7 @@ import mqtt from "mqtt";
 
 const NotificationsContext = createContext();
 const BROKER_URL = "wss://broker.hivemq.com:8884/mqtt";
+
 const loadNotificationsFromStorage = () => {
   const storedNotifications = localStorage.getItem("notifications");
   return storedNotifications ? JSON.parse(storedNotifications) : [];
@@ -13,7 +14,9 @@ const saveNotificationsToStorage = (notifications) => {
 };
 
 export const NotificationsProvider = ({ children, userId }) => {
-  const [notifications, setNotifications] = useState(loadNotificationsFromStorage);
+  const [notifications, setNotifications] = useState(
+    loadNotificationsFromStorage
+  );
   const [medications, setMedications] = useState({});
 
   useEffect(() => {
@@ -28,26 +31,6 @@ export const NotificationsProvider = ({ children, userId }) => {
           medsMap[med.id] = med.name;
         });
         setMedications(medsMap);
-
-        setNotifications((prev) => {
-          const inventoryNotifications = data
-            .filter((med) => med.stock_quantity < 20)
-            .map((med) => ({
-              topic: "inventory/updates",
-              payload: {
-                medicationId: med.id,
-                newQuantity: med.stock_quantity,
-                name: med.name,
-                type: "low_stock",
-              },
-            }));
-
-          const orderNotifications = prev.filter(
-            (n) => !n.topic.includes("inventory/updates")
-          );
-
-          return [...orderNotifications, ...inventoryNotifications];
-        });
       } catch (error) {
         console.error("Błąd pobierania leków:", error);
       }
@@ -63,7 +46,7 @@ export const NotificationsProvider = ({ children, userId }) => {
 
     client.on("connect", () => {
       client.subscribe(
-        [`orders/user/${userId}`, "inventory/updates"],
+        ["orders/user/" + userId, "inventory/updates"],
         (err) => {
           if (err) console.error("Błąd subskrypcji:", err);
         }
@@ -74,28 +57,12 @@ export const NotificationsProvider = ({ children, userId }) => {
       try {
         const payload = JSON.parse(message.toString());
 
-        if (topic.includes(`orders/user/${userId}`)) {
-          if (payload.type === "order_created") {
-            addNotification(topic, {
-              orderId: payload.orderId,
-              message: `Złożono nowe zamówienie o ID ${payload.orderId}`,
-              status: payload.status || "pending",
-              type: "order_created",
-            });
-          } else if (payload.type === "order_status_update") {
-            addNotification(topic, {
-              orderId: payload.orderId,
-              message: `Zaktualizowano status zamówienia ${payload.orderId} na ${payload.status}`,
-              status: payload.status,
-              type: "order_status_update",
-            });
-          }
-
-          fetchMedications();
+        if (topic === `orders/user/${userId}`) {
+          handleOrderNotification(topic, payload);
         }
 
         if (topic.includes("inventory/updates")) {
-          updateNotification(topic, payload);
+          handleInventoryUpdate(topic, payload);
         }
       } catch (error) {
         console.error("Błąd parsowania MQTT:", error);
@@ -107,6 +74,33 @@ export const NotificationsProvider = ({ children, userId }) => {
     };
   }, [userId]);
 
+  const handleOrderNotification = (topic, payload) => {
+    if (payload.type === "order_created") {
+      addNotification(topic, {
+        orderId: payload.orderId,
+        message: `Złożono nowe zamówienie o ID ${payload.orderId}`,
+        status: payload.status || "pending",
+        type: "order_created",
+      });
+    } else if (payload.type === "order_status_update") {
+      addNotification(topic, {
+        orderId: payload.orderId,
+        message: `Zaktualizowano status zamówienia ${payload.orderId} na ${payload.status}`,
+        status: payload.status,
+        type: "order_status_update",
+      });
+    }
+  };
+
+  const handleInventoryUpdate = (topic, payload) => {
+    updateNotification(topic, {
+      ...payload,
+      message: `Stan magazynowy dla ${
+        medications[payload.medicationId] || "lek"
+      } zmieniony na ${payload.newQuantity}`,
+    });
+  };
+
   const updateNotification = (topic, payload) => {
     setNotifications((prev) => {
       const updated = prev.map((n) =>
@@ -116,25 +110,23 @@ export const NotificationsProvider = ({ children, userId }) => {
               payload: {
                 ...payload,
                 name: medications[payload.medicationId] || "Nieznany lek",
-                type: "low_stock",
               },
             }
           : n
       );
 
-      const exists = updated.some(
-        (n) => n.payload.medicationId === payload.medicationId
-      );
-      if (!exists) {
+      if (
+        !updated.some((n) => n.payload.medicationId === payload.medicationId)
+      ) {
         updated.push({
           topic,
           payload: {
             ...payload,
             name: medications[payload.medicationId] || "Nieznany lek",
-            type: "low_stock",
           },
         });
       }
+
       saveNotificationsToStorage(updated);
       return updated;
     });
