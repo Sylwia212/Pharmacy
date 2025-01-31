@@ -9,7 +9,7 @@ const setupInventoryWebSocket = (wss) => {
 
     ws.on("close", () => {
       inventoryClients.delete(ws);
-      console.log("🔌 Klient WebSocket odłączony");
+      console.log("Klient WebSocket odłączony");
     });
 
     ws.on("error", (err) => {

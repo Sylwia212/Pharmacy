@@ -20,7 +20,6 @@ const userRoutes = require("./routes/user.routes");
 const medicationRoutes = require("./routes/medication.routes");
 const cartRoutes = require("./routes/cart.routes");
 const orderRoutes = require("./routes/order.routes");
-const authenticateToken = require("./middlewares/authenticateToken");
 
 const app = express();
 app.use(express.json());
@@ -28,8 +27,8 @@ app.use(express.json());
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-setupInventoryWebSocket(wss); 
-setupUserWebSocket(wss); 
+setupInventoryWebSocket(wss);
+setupUserWebSocket(wss);
 setupChatWebSocket(wss);
 
 app.use(
@@ -48,11 +47,6 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 
-app.get("/api/secret", authenticateToken, (req, res) => {
-  return res.json({
-    message: `Tajne dane dla użytkownika: ${req.user.email}`,
-  });
-});
 
 app.get("/", (req, res) => {
   res.send("Serwer działa poprawnie!");
@@ -62,11 +56,12 @@ const mqtt = require("mqtt");
 const client = mqtt.connect("mqtt://broker.hivemq.com");
 
 client.on("connect", () => {
-  client.subscribe("orders/status", (err) => {
+  const userId = process.env.USER_ID;
+  client.subscribe(`orders/user/${userId}`, (err) => {
     if (err) {
       console.error("Błąd subskrypcji MQTT:", err);
     } else {
-      console.log("Subskrybowano temat: orders/status");
+      console.log("Subskrybowano temat: orders/user/${userId}");
     }
   });
 });
