@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 const API_URL = "http://localhost:3000";
 
 export async function registerUser(email, password) {
@@ -25,9 +24,7 @@ export async function loginUser(email, password) {
 export async function getSecretData(token) {
   const response = await fetch(`${API_URL}/api/secret`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: "include",
   });
   return await response.json();
 }
@@ -37,7 +34,6 @@ export async function getAllUsers(token) {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
   });
@@ -52,9 +48,7 @@ export async function getAllUsers(token) {
 export async function getUserById(userId, token) {
   const response = await fetch(`${API_URL}/api/users/${userId}`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: "include",
   });
   return await response.json();
 }
@@ -76,7 +70,6 @@ export async function deleteUser(userId, token) {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
   });
@@ -89,7 +82,10 @@ export async function deleteUser(userId, token) {
 }
 
 export async function getMedications() {
-  const response = await fetch(`${API_URL}/api/medications`);
+  const response = await fetch(`${API_URL}/api/medications`, {
+    method: "GET",
+    credentials: "include",
+  });
   return await response.json();
 }
 
@@ -97,6 +93,7 @@ export async function addMedication(formData) {
   const response = await fetch(`${API_URL}/api/medications`, {
     method: "POST",
     body: formData,
+    credentials: "include",
   });
   return await response.json();
 }
@@ -104,6 +101,7 @@ export async function addMedication(formData) {
 export async function deleteMedication(id) {
   const response = await fetch(`${API_URL}/api/medications/${id}`, {
     method: "DELETE",
+    credentials: "include",
   });
   if (!response.ok) {
     throw new Error("Błąd podczas usuwania leku");
@@ -112,20 +110,11 @@ export async function deleteMedication(id) {
 }
 
 export async function addToCart(userId, medicationId, quantity) {
-  const token = Cookies.get("jwtToken");
-  console.log("Token używany w addToCart:", token);
-
-  if (!token) {
-    alert("Brak tokena autoryzacji! Upewnij się, że jesteś zalogowany.");
-    return;
-  }
-
   try {
     const response = await fetch("http://localhost:3000/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
       body: JSON.stringify({
@@ -161,6 +150,7 @@ export async function getCart(userId) {
 export async function removeFromCart(cartItemId) {
   const response = await fetch(`${API_URL}/api/cart/${cartItemId}`, {
     method: "DELETE",
+    credentials: "include",
   });
   return await response.json();
 }
@@ -182,19 +172,12 @@ export function getCookie(name) {
 }
 
 export async function clearCart(userId) {
-  const token = Cookies.get("jwtToken");
-
-  if (!token) {
-    throw new Error("Brak tokena autoryzacji. Zaloguj się ponownie.");
-  }
-
   const response = await fetch(
     `http://localhost:3000/api/cart/clear/${userId}`,
     {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
     }
@@ -213,14 +196,6 @@ export async function placeOrder(userId, address, cartItems) {
     throw new Error("Brak wymaganych danych do zamówienia.");
   }
 
-  const token = Cookies.get("jwtToken");
-
-  if (!token) {
-    throw new Error("Brak tokena autoryzacji. Zaloguj się ponownie.");
-  }
-
-  userId = userId.userId || Number(userId);
-
   const orderData = {
     userId,
     address,
@@ -234,7 +209,6 @@ export async function placeOrder(userId, address, cartItems) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
     body: JSON.stringify(orderData),
@@ -249,13 +223,10 @@ export async function placeOrder(userId, address, cartItems) {
 }
 
 export async function getUserOrders(userId) {
-  const token = Cookies.get("jwtToken");
-
   const response = await fetch(`http://localhost:3000/api/orders/${userId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
   });
@@ -268,7 +239,10 @@ export async function getUserOrders(userId) {
 }
 
 export async function getMedicationById(id) {
-  const response = await fetch(`http://localhost:3000/api/medications/${id}`);
+  const response = await fetch(`http://localhost:3000/api/medications/${id}`, {
+    method: "GET",
+    credentials: "include",
+  });
   if (!response.ok) {
     throw new Error("Nie znaleziono leku");
   }
@@ -279,6 +253,7 @@ export async function updateMedication(id, formData) {
   const response = await fetch(`http://localhost:3000/api/medications/${id}`, {
     method: "PUT",
     body: formData,
+    credentials: "include",
   });
   if (!response.ok) {
     throw new Error("Błąd podczas aktualizacji leku");
@@ -287,21 +262,12 @@ export async function updateMedication(id, formData) {
 }
 
 export async function updateOrderStatus(orderId, status) {
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("jwtToken="))
-    ?.split("=")[1];
-
-  if (!token) {
-    throw new Error("Brak tokena autoryzacji. Zaloguj się ponownie.");
-  }
-
   const response = await fetch("http://localhost:3000/api/orders/status", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
+    credentials: "include",
     body: JSON.stringify({ orderId, status }),
   });
 
@@ -322,6 +288,7 @@ export async function searchMedicationByName(name) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     }
   );
 
