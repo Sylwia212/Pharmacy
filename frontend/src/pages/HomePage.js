@@ -72,22 +72,28 @@ function HomePage({ userId, token }) {
   return (
     <div className="page-container">
       <h2>Lista leków</h2>
-      <div>
+      <div className="search-container">
         <h2>Wyszukiwanie leku</h2>
-        <input
-          type="text"
-          placeholder="Podaj nazwę leku"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button onClick={handleSearch}>Szukaj</button>
+        <div className="search-input-container">
+          <input
+            type="text"
+            placeholder="Podaj nazwę leku"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <button onClick={handleSearch} className="search-button">
+            Szukaj
+          </button>
+        </div>
 
         {errorMsg && <p className="error-message">{errorMsg}</p>}
 
-        <ul>
+        <ul className="search-results-list">
           {smedications.map((med) => (
-            <li key={med.id}>
-              {med.name} - {med.price} PLN
+            <li key={med.id} className="search-result-item">
+              <span className="result-name">{med.name}</span>
+              <span className="result-price">{med.price} PLN</span>
             </li>
           ))}
         </ul>

@@ -45,7 +45,7 @@ function App() {
   };
 
   useEffect(() => {
-    const token = Cookies.get("authToken");
+    const token = Cookies.get("jwtToken");
 
     if (token) {
       const decoded = parseJwt(token);
@@ -59,7 +59,6 @@ function App() {
 
   const handleLoginSuccess = (receivedToken) => {
     setToken(receivedToken);
-    Cookies.set("authToken", receivedToken, { expires: 1 });
 
     const decoded = parseJwt(receivedToken);
     if (decoded?.userId) {
@@ -78,7 +77,7 @@ function App() {
       console.error("Błąd podczas wylogowania:", error);
     }
 
-    Cookies.remove("authToken");
+    Cookies.remove("jwtToken");
     setToken("");
     localStorage.removeItem("userId");
     setUserId(Math.floor(Math.random() * 1000000));
