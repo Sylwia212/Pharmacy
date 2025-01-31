@@ -3,9 +3,17 @@ import mqtt from "mqtt";
 
 const NotificationsContext = createContext();
 const BROKER_URL = "wss://broker.hivemq.com:8884/mqtt";
+const loadNotificationsFromStorage = () => {
+  const storedNotifications = localStorage.getItem("notifications");
+  return storedNotifications ? JSON.parse(storedNotifications) : [];
+};
+
+const saveNotificationsToStorage = (notifications) => {
+  localStorage.setItem("notifications", JSON.stringify(notifications));
+};
 
 export const NotificationsProvider = ({ children, userId }) => {
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState(loadNotificationsFromStorage);
   const [medications, setMedications] = useState({});
 
   useEffect(() => {
@@ -67,7 +75,6 @@ export const NotificationsProvider = ({ children, userId }) => {
         const payload = JSON.parse(message.toString());
 
         if (topic.includes(`orders/user/${userId}`)) {
-
           if (payload.type === "order_created") {
             addNotification(topic, {
               orderId: payload.orderId,
@@ -128,22 +135,40 @@ export const NotificationsProvider = ({ children, userId }) => {
           },
         });
       }
-
+      saveNotificationsToStorage(updated);
       return updated;
     });
   };
 
   const addNotification = (topic, payload) => {
     setNotifications((prev) => {
-      const exists = prev.some(
+      const existingNotification = prev.find(
         (n) =>
           n.payload.orderId === payload.orderId &&
           n.payload.type === payload.type
       );
 
-      if (exists) return prev;
+      if (existingNotification) {
+        const updatedNotifications = prev.map((n) =>
+          n === existingNotification
+            ? {
+                ...n,
+                payload: {
+                  ...n.payload,
+                  message: payload.message,
+                  status: payload.status,
+                },
+              }
+            : n
+        );
 
-      return [...prev, { topic, payload }];
+        saveNotificationsToStorage(updatedNotifications);
+        return updatedNotifications;
+      }
+
+      const newNotifications = [...prev, { topic, payload }];
+      saveNotificationsToStorage(newNotifications);
+      return newNotifications;
     });
   };
 
